@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+
+set -e
+
+echo "Running lint (fix) + format..."
+
+bun run lint:fix
+bun run format
+
+echo "Pre-commit checks passed"
