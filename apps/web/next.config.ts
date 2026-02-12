@@ -1,7 +1,11 @@
 import type { NextConfig } from 'next';
+import { webEnv } from '@xd/env/web';
+
+void webEnv;
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  transpilePackages: ['@xd/env'],
+  devIndicators: false,
 };
 
 export default nextConfig;
