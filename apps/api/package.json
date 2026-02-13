@@ -1,0 +1,22 @@
+{
+  "name": "api",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "bun build src/index.ts --target bun --outdir dist",
+    "check-types": "tsc --noEmit",
+    "dev": "bun run --hot src/index.ts",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@xd/env": "*",
+    "hono": "^4.11.9"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@xd/eslint-config": "*",
+    "@xd/typescript-config": "*",
+    "eslint": "^9",
+    "typescript": "^5"
+  }
+}
