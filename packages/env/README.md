@@ -11,6 +11,7 @@ Shared runtime env validation for all services in this monorepo.
 ## Schemas
 
 - `@xd/env/web` -> `webEnv`
+- `@xd/env/db` -> `dbEnv`
 - `@xd/env/http` -> `httpEnv`
 - `@xd/env/ws` -> `wsEnv`
 
