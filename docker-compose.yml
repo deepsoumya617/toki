@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres:16
+    image: postgres:latest
     container_name: xd-postgres
     restart: unless-stopped
 
@@ -13,10 +13,24 @@ services:
       - '5432:5432'
 
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql
 
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U deep -d xd_db']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:latest
+    container_name: xd-redis
+    restart: unless-stopped
+
+    ports:
+      - '6379:6379'
+
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 10s
       timeout: 5s
       retries: 5
