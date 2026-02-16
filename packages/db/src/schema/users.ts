@@ -1,6 +1,10 @@
 import { pgEnum, pgTable, timestamp, uuid, varchar } from 'drizzle-orm/pg-core';
 
-export const userStatusEnum = pgEnum('user_status', ['online', 'offline']);
+export const userStatusEnum = pgEnum('user_status', [
+  'online',
+  'offline',
+  'idle',
+]);
 
 export const users = pgTable('users', {
   id: uuid('id').primaryKey().defaultRandom(),
