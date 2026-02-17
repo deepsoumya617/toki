@@ -1,7 +1,8 @@
 {
-  "extends": "@xd/typescript-config/nextjs.json",
+  "extends": "@xd/typescript-config/base.json",
   "compilerOptions": {
-    "types": ["bun"],
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "types": ["node"],
     "paths": {
       "@/*": ["./*"]
     },

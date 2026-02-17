@@ -1,5 +1,5 @@
 {
-  "extends": "@xd/typescript-config/bun.json",
+  "extends": "@xd/typescript-config/base.json",
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]
 }

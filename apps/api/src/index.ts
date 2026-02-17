@@ -1,9 +1,16 @@
-import { Hono } from 'hono';
+import { httpEnv } from '@xd/env/http';
+import app from './app';
 
-const app = new Hono();
+// export default {
+//   port: httpEnv.PORT,
+//   fetch: app.fetch,
+// };
 
-app.get('/', c => {
-  return c.text('Hello im deep from saturn!');
+const server = Bun.serve({
+  port: httpEnv.PORT,
+  fetch: app.fetch,
 });
 
-export default app;
+console.log(`API server is running on http://localhost:${server.port}`);
+
+// Graceful shutdown -> later
