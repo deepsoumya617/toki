@@ -1,11 +1,5 @@
 {
-  "extends": "@xd/typescript-config/base.json",
-  "compilerOptions": {
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "types": ["bun"],
-    "noEmit": true
-  },
+  "extends": "@xd/typescript-config/bun.json",
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]
 }

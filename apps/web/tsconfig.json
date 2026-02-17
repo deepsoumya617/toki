@@ -1,6 +1,7 @@
 {
   "extends": "@xd/typescript-config/nextjs.json",
   "compilerOptions": {
+    "types": ["bun"],
     "paths": {
       "@/*": ["./*"]
     },

@@ -3,11 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "next build",
+    "build": "bun --bun next build",
     "check-types": "tsc --noEmit",
-    "dev": "next dev",
+    "dev": "bun --bun next dev",
     "lint": "eslint",
-    "start": "next start"
+    "start": "bun --bun next start"
   },
   "dependencies": {
     "@base-ui/react": "^1.1.0",
@@ -25,7 +25,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
+    "@types/bun": "latest",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@xd/eslint-config": "*",
