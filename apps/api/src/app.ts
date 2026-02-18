@@ -1,4 +1,4 @@
-import { errorHandler } from './middleware/error.middleware';
+import { errorHandler } from './middleware/error-middleware';
 import { logger } from 'hono/logger';
 import { Hono } from 'hono';
 
