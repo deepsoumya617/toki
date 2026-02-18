@@ -1,3 +1,4 @@
+import { errorHandler } from './middleware/error.middleware';
 import { logger } from 'hono/logger';
 import { Hono } from 'hono';
 
@@ -29,5 +30,8 @@ app.notFound(c => {
     404
   );
 });
+
+// error handler
+app.onError(errorHandler);
 
 export default app;
