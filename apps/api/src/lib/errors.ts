@@ -19,3 +19,15 @@ export class ApiError extends Error {
     Error.captureStackTrace(this);
   }
 }
+
+export class UnauthorizedError extends ApiError {
+  constructor(message = 'Unauthorized') {
+    super(401, 'UNAUTHORIZED', message);
+  }
+}
+
+export class NotFoundError extends ApiError {
+  constructor(message = 'Not Found') {
+    super(404, 'NOT_FOUND', message);
+  }
+}
