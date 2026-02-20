@@ -1,4 +1,5 @@
 import { ApiError } from '../lib/errors';
+import { httpEnv } from '@xd/env/http';
 import type { Context } from 'hono';
 
 export function errorHandler(e: Error, c: Context) {
@@ -17,15 +18,17 @@ export function errorHandler(e: Error, c: Context) {
     );
   }
 
+  const isProd = httpEnv.NODE_ENV === 'production';
+
   // unknown error
   return c.json(
     {
       success: false,
       error: {
         code: 'INTERNAL_SERVER_ERROR',
-        message: 'An unexpected error occurred',
+        message: isProd ? 'An unexpected error occurred' : e.message,
       },
     },
-    { status: 500 }
+    500
   );
 }

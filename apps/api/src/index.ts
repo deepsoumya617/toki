@@ -14,7 +14,7 @@ const server = Bun.serve({
   fetch: app.fetch,
 });
 
-console.log(`API server is running on http://localhost:${server.port}`);
+console.log(`API server is running on http://localhost:${server.port}/api`);
 
 // Graceful shutdown
 process.on('SIGINT', () => {

@@ -1,4 +1,6 @@
 import { errorHandler } from './middleware/error-middleware';
+import authRoutes from './modules/auth/auth-routes';
+import { prettyJSON } from 'hono/pretty-json';
 import { logger } from 'hono/logger';
 import { Hono } from 'hono';
 
@@ -7,15 +9,23 @@ const app = new Hono();
 // logger middleware
 app.use('*', logger());
 
-// general route for health check
-app.get('/api', c => {
-  return c.json({
-    status: 'ok',
-    message: 'API is running',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-  });
-});
+// pretty json
+app.use(prettyJSON());
+
+// routes
+const apiRoutes = app
+  .basePath('/api')
+  // general route for health check
+  .get('/', c => {
+    return c.json({
+      status: 'ok',
+      message: 'API is running',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+    });
+  })
+  // rest of the routes
+  .route('/auth', authRoutes);
 
 // not found route
 app.notFound(c => {
@@ -35,3 +45,6 @@ app.notFound(c => {
 app.onError(errorHandler);
 
 export default app;
+
+// rpc
+export type ApiRoutes = typeof apiRoutes;

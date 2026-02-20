@@ -31,3 +31,9 @@ export class NotFoundError extends ApiError {
     super(404, 'NOT_FOUND', message);
   }
 }
+
+export class ConflictError extends ApiError {
+  constructor(message = 'Conflict') {
+    super(409, 'CONFLICT', message);
+  }
+}

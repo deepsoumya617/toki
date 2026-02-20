@@ -9,7 +9,11 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@hono/zod-validator": "^0.7.6",
+    "@xd/db": "*",
     "@xd/env": "*",
+    "@xd/shared": "*",
+    "drizzle-orm": "^0.45.1",
     "hono": "^4.11.9"
   },
   "devDependencies": {
