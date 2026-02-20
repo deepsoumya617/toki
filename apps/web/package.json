@@ -3,11 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "bun --bun next build",
+    "build": "bun run --env-file ../../.env.local --bun next build",
     "check-types": "tsc --noEmit",
-    "dev": "bun --bun next dev",
+    "dev": "bun run --env-file ../../.env.local --bun next dev --port 3000",
     "lint": "eslint",
-    "start": "bun --bun next start"
+    "start": "bun run --env-file ../../.env.local --bun next start --port 3000"
   },
   "dependencies": {
     "@base-ui/react": "^1.1.0",
