@@ -8,6 +8,6 @@ redis.onconnect = () => {
   console.log('Connected to Redis');
 };
 
-redis.onclose = error => {
+redis.onclose = () => {
   console.log('Redis connection closed');
 };

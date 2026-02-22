@@ -3,9 +3,9 @@ import {
   SESSION_COOKIE_NAME,
   signUpSchema,
 } from '@xd/shared';
-import { setCookie, getCookie } from 'hono/cookie';
 import { zValidator } from '@hono/zod-validator';
 import { signUpHandler } from './auth-handlers';
+import { setCookie } from 'hono/cookie';
 import { httpEnv } from '@xd/env/http';
 import { Hono } from 'hono';
 

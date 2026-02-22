@@ -13,7 +13,7 @@ app.use('*', logger());
 app.use(prettyJSON());
 
 // routes
-const apiRoutes = app
+export const apiRoutes = app
   .basePath('/api')
   // general route for health check
   .get('/', c => {

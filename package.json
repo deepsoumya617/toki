@@ -17,8 +17,8 @@
     "dev": "bun run --env-file .env.local turbo run dev",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,mdx,css,yml,yaml}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,mdx,css,yml,yaml}\"",
-    "lint": "bun run --env-file .env.local turbo run lint",
-    "lint:fix": "bun run --env-file .env.local turbo run lint -- --fix",
+    "lint": "turbo run lint",
+    "lint:fix": "turbo run lint -- --fix",
     "prepare": "husky"
   },
   "devDependencies": {
