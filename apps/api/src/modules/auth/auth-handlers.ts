@@ -1,8 +1,8 @@
 // handles auth related logic like signup, login...
 
 import { createSession, deleteSession } from '../../lib/session-store';
-import { ConflictError } from '../../lib/errors';
-import { type SignUpInput } from '@xd/shared';
+import { ConflictError, UnauthorizedError } from '../../lib/errors';
+import { type LogInInput, type SignUpInput } from '@xd/shared';
 import { users } from '@xd/db/schema/users';
 import { eq, or } from 'drizzle-orm';
 import { db } from '@xd/db';
@@ -57,7 +57,25 @@ export async function signUpHandler(input: SignUpInput): Promise<string> {
  * @param {LogInInput} input - the login input data
  * @return {Promise<string>} the session token
  */
+export async function logInHandler(input: LogInInput): Promise<string> {
+  const { email, password } = input;
 
+  const [user] = await db.select().from(users).where(eq(users.email, email));
+
+  if (!user) throw new UnauthorizedError('Invalid email or password');
+
+  const isValidPassword = await Bun.password.verify(
+    password,
+    user.password,
+    'bcrypt'
+  );
+
+  if (!isValidPassword)
+    throw new UnauthorizedError('Invalid email or password');
+
+  // create session and return token
+  return await createSession(user.id);
+}
 
 /**
  * @desc handles logout logic

@@ -1,11 +1,12 @@
 import {
   getSessionCookieOptions,
+  logInSchema,
   SESSION_COOKIE_NAME,
   signUpSchema,
 } from '@xd/shared';
+import { logInHandler, logoutHandler, signUpHandler } from './auth-handlers';
 import { sessionMiddleware } from '../../middleware/session-middleware';
 import { deleteCookie, getCookie, setCookie } from 'hono/cookie';
-import { logoutHandler, signUpHandler } from './auth-handlers';
 import { zValidator } from '@hono/zod-validator';
 import { httpEnv } from '@xd/env/http';
 import { Hono } from 'hono';
@@ -19,7 +20,7 @@ interface AuthContext {
   };
 }
 
-// we've to bind the session to the context of the auth routes, 
+// we've to bind the session to the context of the auth routes,
 // so that we can access it in the handlers
 const auth = new Hono<{ Variables: AuthContext }>();
 
@@ -51,22 +52,24 @@ auth.post('/signup', zValidator('json', signUpSchema), async c => {
  * @desc login route
  */
 
-// auth.post('/login', zValidator('json', logInSchema), async c => {
-//   const input = c.req.valid('json');
+auth.post('/login', zValidator('json', logInSchema), async c => {
+  const input = c.req.valid('json');
 
-//   const token = getCookie(c, SESSION_COOKIE_NAME);
-//   if (!token) {
-//     return c.json({
-//       success: false,
-//       message: 'Login failed',
-//     });
-//   }
+  const token = await logInHandler(input);
 
-//   return c.json({
-//     success: true,
-//     message: 'Login successful',
-//   });
-// });
+  // set the cookie with the token
+  setCookie(
+    c,
+    SESSION_COOKIE_NAME,
+    token,
+    getSessionCookieOptions(httpEnv.NODE_ENV === 'production')
+  );
+
+  return c.json({
+    success: true,
+    message: 'Login successful',
+  });
+});
 
 /**
  * @route POST /api/auth/logout
