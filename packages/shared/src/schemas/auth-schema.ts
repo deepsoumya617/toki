@@ -42,7 +42,7 @@ export const signUpSchema = z.object({
     .max(100, 'Display name is too long'),
 });
 
-export const signInSchema = z.object({
+export const logInSchema = z.object({
   email: emailField,
   password: z
     .string()
@@ -53,4 +53,4 @@ export const signInSchema = z.object({
 });
 
 export type SignUpInput = z.infer<typeof signUpSchema>;
-export type SignInInput = z.infer<typeof signInSchema>;
+export type LogInInput = z.infer<typeof logInSchema>;

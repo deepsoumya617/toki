@@ -1,6 +1,6 @@
 // handles auth related logic like signup, login...
 
-import { createSession } from '../../lib/session-store';
+import { createSession, deleteSession } from '../../lib/session-store';
 import { ConflictError } from '../../lib/errors';
 import { type SignUpInput } from '@xd/shared';
 import { users } from '@xd/db/schema/users';
@@ -50,4 +50,20 @@ export async function signUpHandler(input: SignUpInput): Promise<string> {
 
   // create session and return token
   return await createSession(user.id);
+}
+
+/**
+ * @desc handles login logic
+ * @param {LogInInput} input - the login input data
+ * @return {Promise<string>} the session token
+ */
+
+
+/**
+ * @desc handles logout logic
+ * @param {string} token - the session token to invalidate
+ * @return {Promise<void>}
+ */
+export async function logoutHandler(token: string): Promise<void> {
+  await deleteSession(token);
 }
