@@ -1,13 +1,26 @@
 import { errorHandler } from './middleware/error-middleware';
 import authRoutes from './modules/auth/auth-routes';
 import { prettyJSON } from 'hono/pretty-json';
+import { httpEnv } from '@xd/env/http';
 import { logger } from 'hono/logger';
+import { cors } from 'hono/cors';
 import { Hono } from 'hono';
 
 const app = new Hono();
 
 // logger middleware
 app.use('*', logger());
+
+// cors middleware
+app.use(
+  '*',
+  cors({
+    origin: httpEnv.WEB_ORIGIN,
+    allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+  })
+);
 
 // pretty json
 app.use(prettyJSON());
@@ -47,4 +60,4 @@ app.onError(errorHandler);
 export default app;
 
 // rpc
-export type ApiRoutes = typeof apiRoutes;
+export type ApiType = typeof apiRoutes;
