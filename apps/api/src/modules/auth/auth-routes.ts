@@ -4,7 +4,12 @@ import {
   SESSION_COOKIE_NAME,
   signUpSchema,
 } from '@xd/shared';
-import { logInHandler, logoutHandler, signUpHandler } from './auth-handlers';
+import {
+  getCurrentUser,
+  logInHandler,
+  logoutHandler,
+  signUpHandler,
+} from './auth-handlers';
 import { sessionMiddleware } from '../../middleware/session-middleware';
 import { deleteCookie, getCookie, setCookie } from 'hono/cookie';
 import { zValidator } from '@hono/zod-validator';
@@ -90,6 +95,20 @@ auth.post('/logout', sessionMiddleware, async c => {
     },
     200
   );
+});
+
+/**
+ * @route GET /api/auth/me
+ * @desc get current user route
+ */
+auth.get('/me', sessionMiddleware, async c => {
+  const session = c.get('session');
+  const user = await getCurrentUser(session.userId);
+
+  return c.json({
+    success: true,
+    user,
+  });
 });
 
 export default auth;

@@ -60,7 +60,7 @@ export async function createSession(userId: string): Promise<string> {
 
 /**
  * get session payload from redis using the token
- * @param {string} token = session token
+ * @param {string} token session token
  */
 export async function getSession(token: string): Promise<SessionPayload> {
   const redisKey = `${REDIS_SESSION_PREFIX}${token}`;

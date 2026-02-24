@@ -1,7 +1,11 @@
 // handles auth related logic like signup, login...
 
+import {
+  ConflictError,
+  NotFoundError,
+  UnauthorizedError,
+} from '../../lib/errors';
 import { createSession, deleteSession } from '../../lib/session-store';
-import { ConflictError, UnauthorizedError } from '../../lib/errors';
 import { type LogInInput, type SignUpInput } from '@xd/shared';
 import { users } from '@xd/db/schema/users';
 import { eq, or } from 'drizzle-orm';
@@ -84,4 +88,30 @@ export async function logInHandler(input: LogInInput): Promise<string> {
  */
 export async function logoutHandler(token: string): Promise<void> {
   await deleteSession(token);
+}
+
+/**
+ * @desc get current user logic
+ * @param {string} userId - the id of the user to fetch
+ * @return {Promise<{id: string, email: string, username: string, displayName: string}>} the user data
+ */
+export async function getCurrentUser(userId: string): Promise<{
+  id: string;
+  email: string;
+  username: string;
+  displayName: string;
+}> {
+  const [user] = await db
+    .select({
+      id: users.id,
+      email: users.email,
+      username: users.username,
+      displayName: users.displayName,
+    })
+    .from(users)
+    .where(eq(users.id, userId));
+
+  if (!user) throw new NotFoundError('User not found');
+
+  return user;
 }
