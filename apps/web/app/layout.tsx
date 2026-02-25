@@ -1,3 +1,4 @@
+import { QueryProvider } from '@/components/providers/query-provider';
 import { Geist, Geist_Mono, Inter } from 'next/font/google';
 import type { Metadata } from 'next';
 import './globals.css';
@@ -29,7 +30,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <QueryProvider>{children}</QueryProvider>
       </body>
     </html>
   );
