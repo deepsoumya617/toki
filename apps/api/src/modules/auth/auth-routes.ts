@@ -12,22 +12,14 @@ import {
 } from './auth-handlers';
 import { sessionMiddleware } from '../../middleware/session-middleware';
 import { deleteCookie, getCookie, setCookie } from 'hono/cookie';
+import type { HonoVariables } from '../../types/hono';
 import { zValidator } from '@hono/zod-validator';
 import { httpEnv } from '@xd/env/http';
 import { Hono } from 'hono';
 
-// define conext vars
-interface AuthContext {
-  session: {
-    sessionId: string;
-    userId: string;
-    expiresAt: Date;
-  };
-}
-
 // we've to bind the session to the context of the auth routes,
 // so that we can access it in the handlers
-const auth = new Hono<{ Variables: AuthContext }>()
+const auth = new Hono<{ Variables: HonoVariables }>()
 
   /**
    * @route POST /api/auth/signup

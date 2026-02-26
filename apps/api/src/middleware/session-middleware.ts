@@ -3,13 +3,17 @@
  * checks for session token in cookise and validates it
  */
 
+import type { HonoVariables } from '../types/hono';
 import { getSession } from '../lib/session-store';
 import { UnauthorizedError } from '../lib/errors';
 import { SESSION_COOKIE_NAME } from '@xd/shared';
 import type { Context, Next } from 'hono';
 import { getCookie } from 'hono/cookie';
 
-export async function sessionMiddleware(c: Context, next: Next) {
+export async function sessionMiddleware(
+  c: Context<{ Variables: HonoVariables }>,
+  next: Next
+) {
   // get token from cookie
   const token = getCookie(c, SESSION_COOKIE_NAME);
 
