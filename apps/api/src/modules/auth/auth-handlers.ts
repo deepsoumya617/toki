@@ -1,13 +1,18 @@
 // handles auth related logic like signup, login...
 
 import {
+  createSession,
+  deleteSession,
+  getSession,
+} from '../../lib/session-store';
+import {
   ConflictError,
   NotFoundError,
   UnauthorizedError,
 } from '../../lib/errors';
-import { createSession, deleteSession } from '../../lib/session-store';
 import { type LogInInput, type SignUpInput } from '@xd/shared';
-import { users } from '@xd/db/schema/users';
+import { users, type PublicUser } from '@xd/db/schema/users';
+import type { SessionPayload } from '../../types/hono';
 import { eq, or } from 'drizzle-orm';
 import { db } from '@xd/db';
 
@@ -93,20 +98,17 @@ export async function logoutHandler(token: string): Promise<void> {
 /**
  * @desc get current user logic
  * @param {string} userId - the id of the user to fetch
- * @return {Promise<{id: string, email: string, username: string, displayName: string}>} the user data
+ * @return {Promise<PublicUser>} the user data
  */
-export async function getCurrentUser(userId: string): Promise<{
-  id: string;
-  email: string;
-  username: string;
-  displayName: string;
-}> {
+export async function getCurrentUser(userId: string): Promise<PublicUser> {
   const [user] = await db
     .select({
       id: users.id,
       email: users.email,
       username: users.username,
       displayName: users.displayName,
+      status: users.status,
+      lastSeen: users.lastSeen,
     })
     .from(users)
     .where(eq(users.id, userId));
@@ -114,4 +116,28 @@ export async function getCurrentUser(userId: string): Promise<{
   if (!user) throw new NotFoundError('User not found');
 
   return user;
+}
+
+/**
+ * @desc get session logic
+ * @param {string} token - the session token to fetch
+ * @return {Promise<{ session: SessionPayload; user: PublicUser } | null>} the session and user data, or null if no valid session
+ */
+export async function sessionHandler(
+  token: string
+): Promise<{ session: SessionPayload; user: PublicUser } | null> {
+  try {
+    const session = await getSession(token);
+    if (!session) return null;
+
+    const user = await getCurrentUser(session.userId);
+
+    return { session, user };
+  } catch (error) {
+    if (error instanceof UnauthorizedError || error instanceof NotFoundError) {
+      return null;
+    }
+
+    throw error;
+  }
 }

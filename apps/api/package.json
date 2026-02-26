@@ -22,5 +22,7 @@
     "@xd/typescript-config": "*",
     "eslint": "^9",
     "typescript": "^5"
-  }
+  },
+  "module": "src/index.ts",
+  "type": "module"
 }

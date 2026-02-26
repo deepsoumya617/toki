@@ -1,10 +1,10 @@
 // define conext vars
-export interface SessionContext {
+export interface SessionPayload<TExpiresAt = Date> {
   sessionId: string;
   userId: string;
-  expiresAt: Date;
+  expiresAt: TExpiresAt;
 }
 
 export interface HonoVariables {
-  session: SessionContext;
+  session: SessionPayload;
 }

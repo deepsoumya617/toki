@@ -6,17 +6,12 @@ import {
   SESSION_EXPIRY_SECONDS,
   SESSION_TOKEN_BYTES,
 } from '@xd/shared';
+import type { SessionPayload } from '../types/hono';
 import { sessions } from '@xd/db/schema/sessions';
 import { UnauthorizedError } from './errors';
 import { and, eq, gt } from 'drizzle-orm';
 import { redis } from './redis';
 import { db } from '@xd/db';
-
-interface SessionPayload<TExpiresAt = Date> {
-  sessionId: string;
-  userId: string;
-  expiresAt: TExpiresAt;
-}
 
 /**
  * create a session in the db, store in redis and

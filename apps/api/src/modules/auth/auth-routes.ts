@@ -1,15 +1,16 @@
 import {
+  getCurrentUser,
+  logInHandler,
+  logoutHandler,
+  sessionHandler,
+  signUpHandler,
+} from './auth-handlers';
+import {
   getSessionCookieOptions,
   logInSchema,
   SESSION_COOKIE_NAME,
   signUpSchema,
 } from '@xd/shared';
-import {
-  getCurrentUser,
-  logInHandler,
-  logoutHandler,
-  signUpHandler,
-} from './auth-handlers';
 import { sessionMiddleware } from '../../middleware/session-middleware';
 import { deleteCookie, getCookie, setCookie } from 'hono/cookie';
 import type { HonoVariables } from '../../types/hono';
@@ -86,6 +87,34 @@ const auth = new Hono<{ Variables: HonoVariables }>()
       },
       200
     );
+  })
+
+  /**
+   * @route GET /api/auth/get-session
+   * @desc get session route
+   */
+  .get('/get-session', async c => {
+    const token = getCookie(c, SESSION_COOKIE_NAME);
+    if (!token) {
+      return c.json({
+        success: true,
+        data: { session: null, user: null },
+      });
+    }
+
+    const sessionData = await sessionHandler(token);
+
+    if (!sessionData) {
+      return c.json({
+        success: true,
+        data: { session: null, user: null },
+      });
+    }
+
+    return c.json({
+      success: true,
+      data: sessionData,
+    });
   })
 
   /**
