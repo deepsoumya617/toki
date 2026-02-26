@@ -1,22 +1,27 @@
 import {
+  getSessionCookieOptions,
+  signInSchema,
+  SESSION_COOKIE_NAME,
+  signUpSchema,
+  type SessionPayload,
+} from '@xd/shared';
+import {
   getCurrentUser,
-  logInHandler,
+  signInHandler,
   logoutHandler,
   sessionHandler,
   signUpHandler,
 } from './auth-handlers';
-import {
-  getSessionCookieOptions,
-  logInSchema,
-  SESSION_COOKIE_NAME,
-  signUpSchema,
-} from '@xd/shared';
 import { sessionMiddleware } from '../../middleware/session-middleware';
 import { deleteCookie, getCookie, setCookie } from 'hono/cookie';
-import type { HonoVariables } from '../../types/hono';
 import { zValidator } from '@hono/zod-validator';
 import { httpEnv } from '@xd/env/http';
 import { Hono } from 'hono';
+
+// define conext vars
+export interface HonoVariables {
+  session: SessionPayload;
+}
 
 // we've to bind the session to the context of the auth routes,
 // so that we can access it in the handlers
@@ -46,13 +51,13 @@ const auth = new Hono<{ Variables: HonoVariables }>()
   })
 
   /**
-   * @route POST /api/auth/login
-   * @desc login route
+   * @route POST /api/auth/signin
+   * @desc sign in route
    */
-  .post('/login', zValidator('json', logInSchema), async c => {
+  .post('/signin', zValidator('json', signInSchema), async c => {
     const input = c.req.valid('json');
 
-    const token = await logInHandler(input);
+    const token = await signInHandler(input);
 
     // set the cookie with the token
     setCookie(
@@ -64,7 +69,7 @@ const auth = new Hono<{ Variables: HonoVariables }>()
 
     return c.json({
       success: true,
-      message: 'Login successful',
+      message: 'Sign in successful',
     });
   })
 

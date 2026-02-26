@@ -3,7 +3,7 @@
  * checks for session token in cookise and validates it
  */
 
-import type { HonoVariables } from '../types/hono';
+import type { HonoVariables } from '../modules/auth/auth-routes';
 import { getSession } from '../lib/session-store';
 import { UnauthorizedError } from '../lib/errors';
 import { SESSION_COOKIE_NAME } from '@xd/shared';

@@ -1,5 +1,10 @@
-// handles auth related logic like signup, login...
+// handles auth related logic like signup, signin...
 
+import {
+  type SignInInput,
+  type SessionPayload,
+  type SignUpInput,
+} from '@xd/shared';
 import {
   createSession,
   deleteSession,
@@ -10,9 +15,7 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from '../../lib/errors';
-import { type LogInInput, type SignUpInput } from '@xd/shared';
 import { users, type PublicUser } from '@xd/db/schema/users';
-import type { SessionPayload } from '../../types/hono';
 import { eq, or } from 'drizzle-orm';
 import { db } from '@xd/db';
 
@@ -62,11 +65,11 @@ export async function signUpHandler(input: SignUpInput): Promise<string> {
 }
 
 /**
- * @desc handles login logic
- * @param {LogInInput} input - the login input data
+ * @desc handles sign in logic
+ * @param {SignInInput} input - the sign in input data
  * @return {Promise<string>} the session token
  */
-export async function logInHandler(input: LogInInput): Promise<string> {
+export async function signInHandler(input: SignInInput): Promise<string> {
   const { email, password } = input;
 
   const [user] = await db.select().from(users).where(eq(users.email, email));

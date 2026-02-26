@@ -5,8 +5,8 @@ import {
   REDIS_SESSION_TTL_SECONDS,
   SESSION_EXPIRY_SECONDS,
   SESSION_TOKEN_BYTES,
+  type SessionPayload,
 } from '@xd/shared';
-import type { SessionPayload } from '../types/hono';
 import { sessions } from '@xd/db/schema/sessions';
 import { UnauthorizedError } from './errors';
 import { and, eq, gt } from 'drizzle-orm';
