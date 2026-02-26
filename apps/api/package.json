@@ -2,6 +2,8 @@
   "name": "api",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
+  "module": "src/index.ts",
   "scripts": {
     "build": "bun build src/index.ts --target bun --outdir dist",
     "check-types": "tsc --noEmit",
@@ -22,7 +24,5 @@
     "@xd/typescript-config": "*",
     "eslint": "^9",
     "typescript": "^5"
-  },
-  "module": "src/index.ts",
-  "type": "module"
+  }
 }
