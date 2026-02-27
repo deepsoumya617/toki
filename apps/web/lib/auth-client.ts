@@ -1,12 +1,24 @@
-import type { ApiType } from '@apps/api/src/app.ts';
-import { webEnv } from '@xd/env/web';
-import { hc } from 'hono/client';
+import type { SignUpInput } from '@xd/shared';
+import type { SessionResponse } from './auth';
+import { client } from './client';
 
-// export typed client
-export const client = hc<ApiType>(webEnv.NEXT_PUBLIC_API_URL, {
-  init: {
-    credentials: 'include', // include cookies in requests
-    mode: 'cors',
-    cache: 'no-cache',
+export const authClient = {
+  // get session
+  getSession: async (): Promise<SessionResponse> => {
+    try {
+      // rpc
+      const res = await client.api.auth['get-session'].$get();
+
+      if (!res.ok) return { session: null, user: null };
+
+      const body = await res.json();
+      if (!body.success) return { session: null, user: null };
+
+      return body.data ?? { session: null, user: null };
+    } catch (error) {
+      return { session: null, user: null };
+    }
   },
-});
+  // sign up
+  signUp: async (input: SignUpInput) => {},
+};

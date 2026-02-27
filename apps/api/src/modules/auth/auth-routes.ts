@@ -102,7 +102,7 @@ const auth = new Hono<{ Variables: HonoVariables }>()
     const token = getCookie(c, SESSION_COOKIE_NAME);
     if (!token) {
       return c.json({
-        success: true,
+        success: false,
         data: { session: null, user: null },
       });
     }
@@ -111,7 +111,7 @@ const auth = new Hono<{ Variables: HonoVariables }>()
 
     if (!sessionData) {
       return c.json({
-        success: true,
+        success: false,
         data: { session: null, user: null },
       });
     }

@@ -16,3 +16,5 @@ export const getSessionCookieOptions = (isProduction: boolean) => ({
 
 export const REDIS_SESSION_TTL_SECONDS = 60 * 60; // 1 hour
 export const REDIS_SESSION_PREFIX = 'session:';
+
+export const SESSION_QUERY_KEY = ['session'] as const;

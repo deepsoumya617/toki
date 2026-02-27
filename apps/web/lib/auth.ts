@@ -2,8 +2,8 @@ import type { PublicUser } from '@xd/db/schema/users';
 import type { SessionPayload } from '@xd/shared';
 import { webEnv } from '@xd/env/web';
 
-interface SessionResponse {
-  session: SessionPayload | null;
+export interface SessionResponse {
+  session: SessionPayload<string> | null;
   user: PublicUser | null;
 }
 
