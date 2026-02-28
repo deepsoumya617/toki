@@ -1,6 +1,14 @@
-import type { SignUpInput } from '@xd/shared';
+import type { SignInInput, SignUpInput } from '@xd/shared';
 import type { SessionResponse } from './auth';
 import { client } from './client';
+
+interface ApiErrorResponse {
+  success?: boolean;
+  error?: {
+    code?: string;
+    message?: string;
+  };
+}
 
 export const authClient = {
   // get session
@@ -20,5 +28,36 @@ export const authClient = {
     }
   },
   // sign up
-  signUp: async (input: SignUpInput) => {},
+  signUp: async (input: SignUpInput) => {
+    const res = await client.api.auth.signup.$post({ json: input });
+
+    if (!res.ok) {
+      const errorBody: ApiErrorResponse = await res.json();
+      throw new Error(errorBody.error?.message ?? 'Sign up failed');
+    }
+
+    return await res.json();
+  },
+  // sign in
+  signIn: async (input: SignInInput) => {
+    const res = await client.api.auth.signin.$post({ json: input });
+
+    if (!res.ok) {
+      const errorBody: ApiErrorResponse = await res.json();
+      throw new Error(errorBody.error?.message ?? 'Sign in failed');
+    }
+
+    return await res.json();
+  },
+  // log out
+  logout: async () => {
+    const res = await client.api.auth.logout.$post();
+
+    if (!res.ok) {
+      const errorBody: ApiErrorResponse = await res.json();
+      throw new Error(errorBody.error?.message ?? 'Logout failed');
+    }
+
+    return await res.json();
+  },
 };

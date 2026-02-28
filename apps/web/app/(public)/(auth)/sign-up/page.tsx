@@ -1,9 +1,9 @@
+import { SignUpForm } from '@/components/form/sign-up-form';
+
 export default function SignUpPage() {
   return (
-    <div className="p-4">
-      <h1 className="text-sm uppercase text-center font-medium font-mono">
-        Sign Up
-      </h1>
+    <div className="flex flex-col items-center justify-center min-h-dvh px-4 py-6 safe-area-inset">
+      <SignUpForm />
     </div>
   );
 }
