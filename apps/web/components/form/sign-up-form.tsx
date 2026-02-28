@@ -60,10 +60,7 @@ export function SignUpForm() {
           </h1>
           <p className="mt-0.5 text-xs text-stone-500 font-inter">
             Enter your information to get{' '}
-            <span className="font-medium italic text-stone-700">
-              started
-            </span>
-            .
+            <span className="font-medium italic text-stone-700">started</span>.
           </p>
         </div>
 
