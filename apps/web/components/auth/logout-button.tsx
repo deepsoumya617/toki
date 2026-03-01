@@ -21,14 +21,17 @@ export function LogoutButton({
 
   const logoutMutation = useMutation({
     mutationFn: authClient.logout,
-    onSuccess: () => {
+    onSuccess: async () => {
       queryClient.setQueryData(SESSION_QUERY_KEY, {
         session: null,
         user: null,
       });
-      queryClient.invalidateQueries({ queryKey: SESSION_QUERY_KEY });
+      await queryClient.invalidateQueries({ queryKey: SESSION_QUERY_KEY });
       toast.success('Logged out successfully!');
       router.push(redirectTo);
+    },
+    onError: error => {
+      toast.error(error.message || 'Logout failed');
     },
   });
 

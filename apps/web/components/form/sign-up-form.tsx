@@ -6,9 +6,9 @@ import {
   AiUserIcon,
   UserSearch01Icon,
 } from '@hugeicons/core-free-icons';
-import { signUpSchema, type SignUpInput } from '@xd/shared';
+import { SESSION_QUERY_KEY, signUpSchema, type SignUpInput } from '@xd/shared';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { authClient } from '@/lib/auth-client';
 import { useRouter } from 'next/navigation';
@@ -19,6 +19,7 @@ import Link from 'next/link';
 
 export function SignUpForm() {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const {
     register,
@@ -39,7 +40,10 @@ export function SignUpForm() {
   // sign up mutation
   const signUpMutation = useMutation({
     mutationFn: authClient.signUp,
-    onSuccess: () => {
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: SESSION_QUERY_KEY });
+      const freshSession = await authClient.getSession();
+      queryClient.setQueryData(SESSION_QUERY_KEY, freshSession);
       toast.success('Signed up successfully!');
       router.push('/dashboard');
     },

@@ -1,11 +1,12 @@
 'use client';
 
 import { LockPasswordIcon, Mail01Icon } from '@hugeicons/core-free-icons';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { signInSchema, type SignInInput } from '@xd/shared';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { authClient } from '@/lib/auth-client';
+import { SESSION_QUERY_KEY } from '@xd/shared';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { Button } from '../ui/button';
@@ -14,6 +15,7 @@ import Link from 'next/link';
 
 export function SignInForm() {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const {
     register,
@@ -31,7 +33,10 @@ export function SignInForm() {
 
   const signInMutation = useMutation({
     mutationFn: authClient.signIn,
-    onSuccess: () => {
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: SESSION_QUERY_KEY });
+      const freshSession = await authClient.getSession();
+      queryClient.setQueryData(SESSION_QUERY_KEY, freshSession);
       toast.success('Signed in successfully!');
       router.push('/dashboard');
     },
@@ -52,7 +57,7 @@ export function SignInForm() {
             welcome
           </h1>
           <h1 className="bg-linear-to-r from-stone-600 to-stone-900 bg-clip-text text-[45px] font-cooper font-medium tracking-tight text-transparent">
-            back 
+            back
           </h1>
         </div>
 
