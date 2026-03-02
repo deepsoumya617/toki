@@ -14,17 +14,6 @@ const roomPasswordField = z
   .min(8, 'Room password must be at least 8 characters long')
   .max(128, 'Room password must be less than 128 characters long');
 
-const inviteCodeField = z
-  .string()
-  .trim()
-  .min(1, 'Invite code is required')
-  .min(6, 'Invite code is too short')
-  .max(20, 'Invite code is too long')
-  .regex(
-    /^[A-Za-z0-9_-]+$/,
-    'Invite code can only contain letters, numbers, underscores, and hyphens'
-  );
-
 export const roomExpiryOptions = [
   '5m',
   '10m',
@@ -49,7 +38,6 @@ export const createRoomSchema = z.object({
 });
 
 export const joinRoomSchema = z.object({
-  inviteCode: inviteCodeField,
   password: roomPasswordField,
 });
 
@@ -71,10 +59,6 @@ export const updateRoomSchema = z
 
 export const roomIdParamSchema = z.object({
   roomId: z.uuid('Invalid room id'),
-});
-
-export const inviteCodeParamSchema = z.object({
-  inviteCode: inviteCodeField,
 });
 
 // infer inputs

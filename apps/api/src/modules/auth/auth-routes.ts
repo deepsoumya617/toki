@@ -120,20 +120,6 @@ const auth = new Hono<{ Variables: HonoVariables }>()
       success: true,
       data: sessionData,
     });
-  })
-
-  /**
-   * @route GET /api/auth/me
-   * @desc get current user route
-   */
-  .get('/me', sessionMiddleware, async c => {
-    const session = c.get('session');
-    const user = await getCurrentUser(session.userId);
-
-    return c.json({
-      success: true,
-      user,
-    });
   });
 
 export default auth;

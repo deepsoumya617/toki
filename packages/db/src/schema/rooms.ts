@@ -10,7 +10,6 @@ export const rooms = pgTable(
     ownerId: uuid('owner_id')
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
-    inviteCode: varchar('invite_code', { length: 20 }).notNull().unique(),
     expiresAt: timestamp('expires_at', {
       mode: 'string',
       withTimezone: true,
@@ -24,3 +23,7 @@ export const rooms = pgTable(
     index('idx_rooms_expires_at').on(table.expiresAt),
   ]
 );
+
+// types
+type Room = typeof rooms.$inferSelect;
+export type PublicRoom = Omit<Room, 'password' | 'inviteCode'>;
