@@ -26,4 +26,4 @@ export const rooms = pgTable(
 
 // types
 type Room = typeof rooms.$inferSelect;
-export type PublicRoom = Omit<Room, 'password' | 'inviteCode'>;
+export type PublicRoom = Omit<Room, 'password'>;

@@ -19,11 +19,7 @@ import { users, type PublicUser } from '@xd/db/schema/users';
 import { eq, or } from 'drizzle-orm';
 import { db } from '@xd/db';
 
-/**
- * @desc handles signup logic
- * @param {SignUpInput} input - the signup input data
- * @return {Promise<string>} the session token
- */
+// handle sign up logic
 export async function signUpHandler(input: SignUpInput): Promise<string> {
   const { email, username, password, displayName } = input;
 
@@ -64,11 +60,7 @@ export async function signUpHandler(input: SignUpInput): Promise<string> {
   return await createSession(user.id);
 }
 
-/**
- * @desc handles sign in logic
- * @param {SignInInput} input - the sign in input data
- * @return {Promise<string>} the session token
- */
+// sign in
 export async function signInHandler(input: SignInInput): Promise<string> {
   const { email, password } = input;
 
@@ -89,20 +81,12 @@ export async function signInHandler(input: SignInInput): Promise<string> {
   return await createSession(user.id);
 }
 
-/**
- * @desc handles logout logic
- * @param {string} token - the session token to invalidate
- * @return {Promise<void>}
- */
+// logout>
 export async function logoutHandler(token: string): Promise<void> {
   await deleteSession(token);
 }
 
-/**
- * @desc get current user logic
- * @param {string} userId - the id of the user to fetch
- * @return {Promise<PublicUser>} the user data
- */
+// get current user data
 export async function getCurrentUser(userId: string): Promise<PublicUser> {
   const [user] = await db
     .select({
@@ -121,11 +105,7 @@ export async function getCurrentUser(userId: string): Promise<PublicUser> {
   return user;
 }
 
-/**
- * @desc get session logic
- * @param {string} token - the session token to fetch
- * @return {Promise<{ session: SessionPayload; user: PublicUser } | null>} the session and user data, or null if no valid session
- */
+// get session data based on token
 export async function sessionHandler(
   token: string
 ): Promise<{ session: SessionPayload; user: PublicUser } | null> {

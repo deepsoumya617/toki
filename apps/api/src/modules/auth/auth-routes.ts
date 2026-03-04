@@ -26,11 +26,6 @@ export interface HonoVariables {
 // we've to bind the session to the context of the auth routes,
 // so that we can access it in the handlers
 const auth = new Hono<{ Variables: HonoVariables }>()
-
-  /**
-   * @route POST /api/auth/signup
-   * @desc signup route
-   */
   .post('/signup', zValidator('json', signUpSchema), async c => {
     const input = c.req.valid('json');
 
@@ -49,11 +44,6 @@ const auth = new Hono<{ Variables: HonoVariables }>()
       message: 'Signup successful',
     });
   })
-
-  /**
-   * @route POST /api/auth/signin
-   * @desc sign in route
-   */
   .post('/signin', zValidator('json', signInSchema), async c => {
     const input = c.req.valid('json');
 
@@ -72,11 +62,6 @@ const auth = new Hono<{ Variables: HonoVariables }>()
       message: 'Sign in successful',
     });
   })
-
-  /**
-   * @route POST /api/auth/logout
-   * @desc logout route
-   */
   .post('/logout', sessionMiddleware, async c => {
     const token = getCookie(c, SESSION_COOKIE_NAME) as string;
 
@@ -93,11 +78,6 @@ const auth = new Hono<{ Variables: HonoVariables }>()
       200
     );
   })
-
-  /**
-   * @route GET /api/auth/get-session
-   * @desc get session route
-   */
   .get('/get-session', async c => {
     const token = getCookie(c, SESSION_COOKIE_NAME);
     if (!token) {

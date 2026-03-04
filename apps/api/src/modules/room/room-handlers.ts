@@ -1,6 +1,12 @@
+import {
+  ConflictError,
+  NotFoundError,
+  UnauthorizedError,
+} from '../../lib/errors';
 import type { CreateRoomInput, RoomExpiryOption } from '@xd/shared';
 import { rooms, type PublicRoom } from '@xd/db/schema/rooms';
 import { roomMembers } from '@xd/db/schema/room-members';
+import { eq } from 'drizzle-orm';
 import { db } from '@xd/db';
 
 const EXPIRY_TO_MS: Record<RoomExpiryOption, number | null> = {
@@ -24,12 +30,7 @@ function getExpiresAt(expiresIn: RoomExpiryOption): string | null {
   return new Date(Date.now() + durationMs).toISOString();
 }
 
-/**
- * @desc handles room creation logic
- * @param {CreateRoomInput} input - the room creation input data
- * @param {string} userId - the id of the user creating the room
- * @return {Promise<PublicRoom>} - created room data
- */
+// handle create room logic
 export async function createRoomHandler(
   input: CreateRoomInput,
   userId: string
@@ -70,4 +71,48 @@ export async function createRoomHandler(
   });
 
   return room;
+}
+
+// handle join room logic
+export async function joinRoomHandler(
+  roomId: string,
+  password: string,
+  userId: string
+): Promise<PublicRoom> {
+  // check room
+  const [room] = await db.select().from(rooms).where(eq(rooms.id, roomId));
+
+  if (!room) throw new NotFoundError('Room not found');
+
+  if (room.expiresAt && new Date(room.expiresAt).getTime() <= Date.now()) {
+    throw new NotFoundError('Room not found');
+  }
+
+  // validate password
+  const isValidPassword = await Bun.password.verify(
+    password,
+    room.password,
+    'bcrypt'
+  );
+
+  if (!isValidPassword) throw new UnauthorizedError('Invalid room password');
+
+  // else..
+  const [member] = await db
+    .insert(roomMembers)
+    .values({ roomId, userId })
+    .onConflictDoNothing({ target: [roomMembers.roomId, roomMembers.userId] })
+    .returning({ id: roomMembers.id });
+
+  if (!member) {
+    throw new ConflictError('You are already a member of this room');
+  }
+
+  return {
+    id: room.id,
+    name: room.name,
+    ownerId: room.ownerId,
+    expiresAt: room.expiresAt,
+    createdAt: room.createdAt,
+  };
 }

@@ -16,8 +16,6 @@ import { db } from '@xd/db';
 /**
  * create a session in the db, store in redis and
  * returns the token
- * @param {string} userId - the id of the user to create a session for
- * @returns {Promise<string>} the session token
  */
 export async function createSession(userId: string): Promise<string> {
   const tokenBytes = new Uint8Array(SESSION_TOKEN_BYTES);
