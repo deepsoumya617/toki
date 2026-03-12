@@ -6,7 +6,7 @@ import {
 import type { CreateRoomInput, RoomExpiryOption } from '@xd/shared';
 import { rooms, type PublicRoom } from '@xd/db/schema/rooms';
 import { roomMembers } from '@xd/db/schema/room-members';
-import { eq } from 'drizzle-orm';
+import { and, eq, exists } from 'drizzle-orm';
 import { db } from '@xd/db';
 
 const EXPIRY_TO_MS: Record<RoomExpiryOption, number | null> = {
@@ -115,4 +115,21 @@ export async function joinRoomHandler(
     expiresAt: room.expiresAt,
     createdAt: room.createdAt,
   };
+}
+
+// get all rooms for a member
+export async function getRoomsHandler(userId: string): Promise<PublicRoom[]> {
+  const allRooms = await db
+    .select({
+      id: rooms.id,
+      name: rooms.name,
+      ownerId: rooms.ownerId,
+      expiresAt: rooms.expiresAt,
+      createdAt: rooms.createdAt,
+    })
+    .from(roomMembers)
+    .innerJoin(rooms, eq(roomMembers.roomId, rooms.id))
+    .where(eq(roomMembers.userId, userId));
+
+  return allRooms;
 }

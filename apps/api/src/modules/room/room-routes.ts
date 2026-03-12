@@ -3,8 +3,12 @@ import {
   joinRoomSchema,
   roomIdParamSchema,
 } from '@xd/shared';
+import {
+  createRoomHandler,
+  getRoomsHandler,
+  joinRoomHandler,
+} from './room-handlers';
 import { sessionMiddleware } from '../../middleware/session-middleware';
-import { createRoomHandler, joinRoomHandler } from './room-handlers';
 import type { HonoVariables } from '../auth/auth-routes';
 import { zValidator } from '@hono/zod-validator';
 import { Hono } from 'hono';
@@ -38,6 +42,15 @@ const room = new Hono<{ Variables: HonoVariables }>()
         data,
       });
     }
-  );
+  )
+  .get('/my', async c => {
+    const session = c.get('session');
+    const rooms = await getRoomsHandler(session.userId);
+
+    return c.json({
+      success: true,
+      rooms,
+    });
+  });
 
 export default room;
