@@ -137,6 +137,7 @@ export async function getRoomByIdHandler(roomId: string, userId: string) {
     .select({
       id: rooms.id,
       name: rooms.name,
+      ownerId: rooms.ownerId,
       expiresAt: rooms.expiresAt,
       createdAt: rooms.createdAt,
     })
@@ -147,4 +148,29 @@ export async function getRoomByIdHandler(roomId: string, userId: string) {
   if (!room) throw new NotFoundError('Room not found');
 
   return room;
+}
+
+// leaver room
+export async function leaveRoomByIdHandler(roomId: string, userId: string) {
+  const [room] = await db.select().from(rooms).where(eq(rooms.id, roomId));
+
+  if (!room) throw new NotFoundError('Room not found.');
+
+  // check if user is owner
+  // throw error for now
+  // later we will delete the room and all the members if owner leaves
+  if (userId === room.ownerId)
+    throw new ConflictError('Room owner cannot leave the room');
+
+  // check membership
+  const [membership] = await db
+    .select()
+    .from(roomMembers)
+    .where(and(eq(roomMembers.roomId, roomId), eq(roomMembers.userId, userId)));
+
+  if (!membership) throw new NotFoundError('You are not a member of this room');
+
+  await db
+    .delete(roomMembers)
+    .where(and(eq(roomMembers.roomId, roomId), eq(roomMembers.userId, userId)));
 }

@@ -3,6 +3,7 @@ import {
   getRoomByIdHandler,
   getRoomsHandler,
   joinRoomHandler,
+  leaveRoomByIdHandler,
 } from './room-handlers';
 import {
   createRoomSchema,
@@ -62,6 +63,16 @@ const room = new Hono<{ Variables: HonoVariables }>()
     return c.json({
       success: true,
       room,
+    });
+  })
+  .post('/:roomId/leave', zValidator('param', roomIdParamSchema), async c => {
+    const session = c.get('session');
+    const { roomId } = c.req.valid('param');
+
+    await leaveRoomByIdHandler(roomId, session.userId);
+
+    return c.json({
+      success: true,
     });
   });
 
