@@ -117,19 +117,34 @@ export async function joinRoomHandler(
   };
 }
 
-// get all rooms for a member
-export async function getRoomsHandler(userId: string): Promise<PublicRoom[]> {
+// get all rooms for a member -> for sidebar
+export async function getRoomsHandler(userId: string) {
   const allRooms = await db
     .select({
       id: rooms.id,
       name: rooms.name,
-      ownerId: rooms.ownerId,
-      expiresAt: rooms.expiresAt,
-      createdAt: rooms.createdAt,
     })
     .from(roomMembers)
     .innerJoin(rooms, eq(roomMembers.roomId, rooms.id))
     .where(eq(roomMembers.userId, userId));
 
   return allRooms;
+}
+
+// get room by id for a member
+export async function getRoomByIdHandler(roomId: string, userId: string) {
+  const [room] = await db
+    .select({
+      id: rooms.id,
+      name: rooms.name,
+      expiresAt: rooms.expiresAt,
+      createdAt: rooms.createdAt,
+    })
+    .from(roomMembers)
+    .innerJoin(rooms, eq(roomMembers.roomId, rooms.id))
+    .where(and(eq(roomMembers.userId, userId), eq(rooms.id, roomId)));
+
+  if (!room) throw new NotFoundError('Room not found');
+
+  return room;
 }

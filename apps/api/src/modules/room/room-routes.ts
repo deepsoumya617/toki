@@ -1,13 +1,14 @@
 import {
+  createRoomHandler,
+  getRoomByIdHandler,
+  getRoomsHandler,
+  joinRoomHandler,
+} from './room-handlers';
+import {
   createRoomSchema,
   joinRoomSchema,
   roomIdParamSchema,
 } from '@xd/shared';
-import {
-  createRoomHandler,
-  getRoomsHandler,
-  joinRoomHandler,
-} from './room-handlers';
 import { sessionMiddleware } from '../../middleware/session-middleware';
 import type { HonoVariables } from '../auth/auth-routes';
 import { zValidator } from '@hono/zod-validator';
@@ -50,6 +51,17 @@ const room = new Hono<{ Variables: HonoVariables }>()
     return c.json({
       success: true,
       rooms,
+    });
+  })
+  .get('/:roomId', zValidator('param', roomIdParamSchema), async c => {
+    const session = c.get('session');
+    const { roomId } = c.req.valid('param');
+
+    const room = await getRoomByIdHandler(roomId, session.userId);
+
+    return c.json({
+      success: true,
+      room,
     });
   });
 

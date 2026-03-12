@@ -24,6 +24,7 @@ export const authClient = {
 
       return body.data ?? { session: null, user: null };
     } catch (error) {
+      console.log('error: ', error);
       return { session: null, user: null };
     }
   },
