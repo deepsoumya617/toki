@@ -6,7 +6,7 @@ import {
 import type { CreateRoomInput, RoomExpiryOption } from '@xd/shared';
 import { rooms, type PublicRoom } from '@xd/db/schema/rooms';
 import { roomMembers } from '@xd/db/schema/room-members';
-import { and, eq, exists } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { db } from '@xd/db';
 
 const EXPIRY_TO_MS: Record<RoomExpiryOption, number | null> = {

@@ -6,7 +6,6 @@ import {
   type SessionPayload,
 } from '@xd/shared';
 import {
-  getCurrentUser,
   signInHandler,
   logoutHandler,
   sessionHandler,
