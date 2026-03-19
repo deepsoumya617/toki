@@ -4,7 +4,7 @@
 
 Core backend service for **Toki**, built with Bun + Hono.
 
-This service handles the core *HTTP APIs*:
+This service handles the core _HTTP APIs_:
 
 - authentication and session handling
 - users

@@ -1,3 +1,3 @@
-smthn ~~smthn~~
----
-> *work in progress*
+## smthn ~~smthn~~
+
+> _work in progress_
