@@ -109,14 +109,14 @@ export default function ProtectedLayoutClient({
                   <ScrollArea className="h-40">
                     <ul className="px-4 py-3">
                       {rooms.map(room => (
-                          <li key={room} className="py-0.5">
-                            <a
-                              href={`/dashboard/rooms/${room.toLowerCase()}`}
-                              className="block text-sm font-medium text-stone-700 transition-transform duration-150 hover:scale-[1.02] hover:text-stone-900"
-                            >
-                              {room}
-                            </a>
-                          </li>
+                        <li key={room} className="py-0.5">
+                          <a
+                            href={`/dashboard/rooms/${room.toLowerCase()}`}
+                            className="block text-sm font-medium text-stone-700 transition-transform duration-150 hover:scale-[1.02] hover:text-stone-900"
+                          >
+                            {room}
+                          </a>
+                        </li>
                       ))}
                     </ul>
                   </ScrollArea>
