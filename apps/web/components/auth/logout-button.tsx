@@ -26,7 +26,11 @@ export function LogoutButton({
         session: null,
         user: null,
       });
-      await queryClient.invalidateQueries({ queryKey: SESSION_QUERY_KEY });
+      await queryClient.invalidateQueries({
+        queryKey: SESSION_QUERY_KEY,
+        exact: true,
+      });
+
       toast.success('Logged out successfully!');
       router.push(redirectTo);
     },

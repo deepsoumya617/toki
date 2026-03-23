@@ -3,11 +3,11 @@
 import { PanelLeftOpenIcon, PlusSignIcon } from '@hugeicons/core-free-icons';
 import { LogoutButton } from '@/components/auth/logout-button';
 import { usePathname, useRouter } from 'next/navigation';
-import type { SessionResponse } from '@/lib/auth';
+import { useSession } from '@/hooks/use-session';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { ScrollArea } from '../ui/scroll-area';
+import { useEffect, useState } from 'react';
 import { DmModal } from '../ui/dm-modal';
-import { useState } from 'react';
 
 // demo rooms
 const rooms: string[] = [
@@ -26,15 +26,40 @@ const dms = ['Manish', 'Shreya', 'Ma', 'Soumili'];
 
 export default function ProtectedLayoutClient({
   children,
-  session,
 }: {
   children: React.ReactNode;
-  session: SessionResponse;
 }) {
+  // session
+  const { data: session, isPending } = useSession();
+  const hasSession = session?.session !== null && session?.user !== null;
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isDmModalOpen, setIsDmModalOpen] = useState(false);
   const currentPath = usePathname();
   const router = useRouter();
+
+  useEffect(() => {
+    if (!isPending && !hasSession) {
+      router.replace('/sign-in');
+    }
+  }, [hasSession, isPending, router]);
+
+  if (isPending) {
+    return (
+      <div className="flex items-center justify-center gap-1.5">
+        {[...Array(4)].map((_, i) => (
+          <div
+            key={i}
+            className="h-5 w-5 rounded-md bg-stone-300 animate-pulse"
+          />
+        ))}
+      </div>
+    );
+  }
+
+  if (!hasSession) {
+    return null;
+  }
 
   return (
     <section className="h-dvh w-full select-none">
@@ -74,10 +99,10 @@ export default function ProtectedLayoutClient({
               <div className="flex items-center gap-3 px-4 py-3">
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-pixel-square text-base font-medium text-stone-900">
-                    {session.user?.displayName}
+                    {session?.user?.displayName}
                   </p>
                   <p className="truncate text-xs text-stone-500">
-                    @{session.user?.username}
+                    @{session?.user?.username}
                   </p>
                 </div>
               </div>
@@ -108,8 +133,8 @@ export default function ProtectedLayoutClient({
                 {rooms.length > 0 ? (
                   <ScrollArea className="h-40">
                     <ul className="px-4 py-3">
-                      {rooms.map(room => (
-                        <li key={room} className="py-0.5">
+                      {rooms.map((room, i) => (
+                        <li key={i} className="py-0.5">
                           <a
                             href={`/dashboard/rooms/${room.toLowerCase()}`}
                             className="block text-sm font-medium text-stone-700 transition-transform duration-150 hover:scale-[1.02] hover:text-stone-900"
@@ -163,8 +188,8 @@ export default function ProtectedLayoutClient({
                 {dms.length > 0 ? (
                   <ScrollArea className="h-40">
                     <ul className="px-4 py-3">
-                      {dms.map(dm => (
-                        <li key={dm} className="py-0.5">
+                      {dms.map((dm, i) => (
+                        <li key={i} className="py-0.5">
                           <a
                             href={`/dashboard/rooms/${dm.toLowerCase()}`}
                             className="block text-sm font-medium text-stone-700"

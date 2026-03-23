@@ -8,9 +8,9 @@ export function useSession() {
   return useQuery({
     queryKey: SESSION_QUERY_KEY,
     queryFn: authClient.getSession,
+    staleTime: Infinity,
     retry: false,
-    refetchOnWindowFocus: true,
-    refetchOnReconnect: true,
-    refetchInterval: 30 * 1000,
+    refetchOnWindowFocus: 'always',
+    refetchOnReconnect: 'always',
   });
 }

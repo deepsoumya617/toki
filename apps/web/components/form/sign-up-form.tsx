@@ -9,17 +9,28 @@ import {
 import { SESSION_QUERY_KEY, signUpSchema, type SignUpInput } from '@xd/shared';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useSession } from '@/hooks/use-session';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { authClient } from '@/lib/auth-client';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { Button } from '../ui/button';
+import { useEffect } from 'react';
 import { toast } from 'sonner';
 import Link from 'next/link';
 
 export function SignUpForm() {
   const router = useRouter();
   const queryClient = useQueryClient();
+
+  const { data: session, isPending: isSessionPending } = useSession();
+  const hasSession = session?.session !== null && session?.user !== null;
+
+  useEffect(() => {
+    if (!isSessionPending && hasSession) {
+      router.replace('/dashboard');
+    }
+  }, [hasSession, isSessionPending, router]);
 
   const {
     register,
@@ -41,11 +52,14 @@ export function SignUpForm() {
   const signUpMutation = useMutation({
     mutationFn: authClient.signUp,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: SESSION_QUERY_KEY });
-      const freshSession = await authClient.getSession();
-      queryClient.setQueryData(SESSION_QUERY_KEY, freshSession);
+      await queryClient.invalidateQueries({
+        queryKey: SESSION_QUERY_KEY,
+        exact: true,
+      });
+
       toast.success('Signed up successfully!');
-      router.push('/dashboard');
+      router.replace('/dashboard');
+      router.refresh();
     },
     onError: error => {
       toast.error(error.message || 'Sign up failed');
@@ -55,6 +69,19 @@ export function SignUpForm() {
   // handle form submit
   function onSubmit(data: SignUpInput) {
     signUpMutation.mutate(data);
+  }
+
+  if (isSessionPending || signUpMutation.isPending || hasSession) {
+    return (
+      <div className="flex items-center justify-center gap-1.5">
+        {[...Array(4)].map((_, i) => (
+          <div
+            key={i}
+            className="h-5 w-5 rounded-md bg-stone-300 animate-pulse"
+          />
+        ))}
+      </div>
+    );
   }
 
   return (

@@ -4,18 +4,30 @@ import { LockPasswordIcon, Mail01Icon } from '@hugeicons/core-free-icons';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { signInSchema, type SignInInput } from '@xd/shared';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useSession } from '@/hooks/use-session';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { authClient } from '@/lib/auth-client';
 import { SESSION_QUERY_KEY } from '@xd/shared';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { Button } from '../ui/button';
+import { useEffect } from 'react';
 import { toast } from 'sonner';
 import Link from 'next/link';
 
 export function SignInForm() {
   const router = useRouter();
   const queryClient = useQueryClient();
+
+  // forward instantly for separate tabs
+  const { data: session, isPending: isSessionPending } = useSession();
+  const hasSession = session?.session !== null && session?.user !== null;
+
+  useEffect(() => {
+    if (!isSessionPending && hasSession) {
+      router.replace('/dashboard');
+    }
+  }, [hasSession, isSessionPending, router]);
 
   const {
     register,
@@ -34,11 +46,14 @@ export function SignInForm() {
   const signInMutation = useMutation({
     mutationFn: authClient.signIn,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: SESSION_QUERY_KEY });
-      const freshSession = await authClient.getSession();
-      queryClient.setQueryData(SESSION_QUERY_KEY, freshSession);
+      await queryClient.invalidateQueries({
+        queryKey: SESSION_QUERY_KEY,
+        exact: true,
+      });
+
       toast.success('Signed in successfully!');
-      router.push('/dashboard');
+      router.replace('/dashboard');
+      router.refresh();
     },
     onError: error => {
       toast.error(error.message || 'Sign in failed');
@@ -47,6 +62,19 @@ export function SignInForm() {
 
   function onSubmit(data: SignInInput) {
     signInMutation.mutate(data);
+  }
+
+  if (isSessionPending || signInMutation.isPending || hasSession) {
+    return (
+      <div className="flex items-center justify-center gap-1.5">
+        {[...Array(4)].map((_, i) => (
+          <div
+            key={i}
+            className="h-5 w-5 rounded-md bg-stone-300 animate-pulse"
+          />
+        ))}
+      </div>
+    );
   }
 
   return (
