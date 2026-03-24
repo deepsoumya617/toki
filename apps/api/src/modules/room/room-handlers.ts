@@ -6,7 +6,7 @@ import {
 import type { CreateRoomInput, RoomExpiryOption } from '@xd/shared';
 import { rooms, type PublicRoom } from '@xd/db/schema/rooms';
 import { roomMembers } from '@xd/db/schema/room-members';
-import { and, eq } from 'drizzle-orm';
+import { and, desc, eq } from 'drizzle-orm';
 import { db } from '@xd/db';
 
 const EXPIRY_TO_MS: Record<RoomExpiryOption, number | null> = {
@@ -126,7 +126,9 @@ export async function getRoomsHandler(userId: string) {
     })
     .from(roomMembers)
     .innerJoin(rooms, eq(roomMembers.roomId, rooms.id))
-    .where(eq(roomMembers.userId, userId));
+    .where(eq(roomMembers.userId, userId))
+    .orderBy(desc(rooms.createdAt))
+    .limit(5);
 
   return allRooms;
 }

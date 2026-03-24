@@ -6,23 +6,9 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useSession } from '@/hooks/use-session';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { ScrollArea } from '../ui/scroll-area';
+import { useRooms } from '@/hooks/use-rooms';
 import { useEffect, useState } from 'react';
 import { DmModal } from '../ui/dm-modal';
-
-// demo rooms
-const rooms: string[] = [
-  'General',
-  'Random',
-  'Tech Talk',
-  'Gaming',
-  'Music',
-  'Movies',
-  'Sports',
-  'Travel',
-];
-
-// demo dms
-const dms = ['Manish', 'Shreya', 'Ma', 'Soumili'];
 
 export default function ProtectedLayoutClient({
   children,
@@ -31,6 +17,10 @@ export default function ProtectedLayoutClient({
 }) {
   // session
   const { data: session, isPending } = useSession();
+
+  // rooms
+  const { data: rooms = [] } = useRooms();
+
   const hasSession = session?.session !== null && session?.user !== null;
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -131,20 +121,18 @@ export default function ProtectedLayoutClient({
                 <span className="absolute -bottom-1 -right-1 z-10 size-2 border border-stone-300 bg-stone-50" />
 
                 {rooms.length > 0 ? (
-                  <ScrollArea className="h-40">
-                    <ul className="px-4 py-3">
-                      {rooms.map((room, i) => (
-                        <li key={i} className="py-0.5">
-                          <a
-                            href={`/dashboard/rooms/${room.toLowerCase()}`}
-                            className="block text-sm font-medium text-stone-700 transition-transform duration-150 hover:scale-[1.02] hover:text-stone-900"
-                          >
-                            {room}
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                  </ScrollArea>
+                  <ul className="px-4 py-3">
+                    {rooms.map(room => (
+                      <li key={room.id} className="py-0.5">
+                        <a
+                          href={`/dashboard/rooms/${room.name.toLowerCase()}`}
+                          className="block text-sm font-medium text-stone-700 hover:text-stone-900"
+                        >
+                          {room.name}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
                 ) : (
                   <p className="px-4 py-3 text-sm text-stone-500 font-pixel-square">
                     No rooms available.{' '}
@@ -163,7 +151,7 @@ export default function ProtectedLayoutClient({
 
             <div className="h-px shrink-0 bg-stone-300" />
 
-            <div className="px-4 py-3 flex flex-col space-y-4">
+            <div className="px-4 py-4 flex flex-col space-y-4">
               <div className="flex justify-between items-center">
                 <h1 className="font-pixel-square text-2xl">DMs</h1>
                 <HugeiconsIcon
@@ -185,32 +173,15 @@ export default function ProtectedLayoutClient({
                 <span className="absolute -bottom-1 -left-1 z-10 size-2 border border-stone-300 bg-stone-50" />
                 <span className="absolute -bottom-1 -right-1 z-10 size-2 border border-stone-300 bg-stone-50" />
 
-                {dms.length > 0 ? (
-                  <ScrollArea className="h-40">
-                    <ul className="px-4 py-3">
-                      {dms.map((dm, i) => (
-                        <li key={i} className="py-0.5">
-                          <a
-                            href={`/dashboard/rooms/${dm.toLowerCase()}`}
-                            className="block text-sm font-medium text-stone-700"
-                          >
-                            {dm}
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                  </ScrollArea>
-                ) : (
-                  <p className="px-4 py-3 text-sm text-stone-500 font-pixel-square">
-                    No DMs available.{' '}
-                    <span
-                      className="text-stone-950 underline underline-offset-2 decoration-2 cursor-pointer"
-                      onClick={() => setIsDmModalOpen(true)}
-                    >
-                      Start one
-                    </span>
-                  </p>
-                )}
+                <p className="px-4 py-3 text-sm text-stone-500 font-pixel-square">
+                  No DMs available.{' '}
+                  <span
+                    className="text-stone-950 underline underline-offset-2 decoration-2 cursor-pointer"
+                    onClick={() => setIsDmModalOpen(true)}
+                  >
+                    Start one
+                  </span>
+                </p>
               </div>
 
               <div className="w-7 shrink-0 border-l border-stone-200 bg-[repeating-linear-gradient(315deg,rgba(0,0,0,0.08)_0,rgba(0,0,0,0.08)_1px,transparent_0,transparent_50%)] bg-size-[6px_6px]" />
