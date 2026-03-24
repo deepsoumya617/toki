@@ -29,9 +29,7 @@ export default async function ProtectedLayout({
     queryFn: () => auth.api.getSession({ headers: h }),
   });
 
-  const session = queryClient.getQueryData<SessionResponse>(
-    SESSION_QUERY_KEY
-  );
+  const session = queryClient.getQueryData<SessionResponse>(SESSION_QUERY_KEY);
 
   // redirect on /sign-in if session = null
   const hasSession = session?.session !== null && session?.user !== null;
@@ -40,9 +38,7 @@ export default async function ProtectedLayout({
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <ProtectedLayoutClient>
-        {children}
-      </ProtectedLayoutClient>
+      <ProtectedLayoutClient>{children}</ProtectedLayoutClient>
     </HydrationBoundary>
   );
 }

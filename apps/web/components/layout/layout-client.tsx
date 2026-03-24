@@ -108,7 +108,7 @@ export default function ProtectedLayoutClient({
               </div>
             </div>
 
-            <div className="p-4 flex flex-col space-y-4">
+            <div className="px-4 py-3 flex flex-col space-y-4">
               <div className="flex justify-between items-center">
                 <h1 className="font-pixel-square text-2xl">Rooms</h1>
                 <HugeiconsIcon
@@ -163,7 +163,7 @@ export default function ProtectedLayoutClient({
 
             <div className="h-px shrink-0 bg-stone-300" />
 
-            <div className="p-4 flex flex-col space-y-4 mt-4">
+            <div className="px-4 py-3 flex flex-col space-y-4">
               <div className="flex justify-between items-center">
                 <h1 className="font-pixel-square text-2xl">DMs</h1>
                 <HugeiconsIcon
