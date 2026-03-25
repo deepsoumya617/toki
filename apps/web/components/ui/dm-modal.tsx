@@ -40,7 +40,7 @@ export function DmModal({ isOpen, onClose, onSubmit }: DmModalProps) {
 
         <div className="border-b border-stone-200 px-3 py-2 sm:px-4 sm:py-3">
           <div className="flex items-center justify-between">
-            <h2 className="font-pixel-square text-sm sm:text-base">New DM</h2>
+            <h2 className=" text-sm sm:text-base">New DM</h2>
             <button
               onClick={onClose}
               className="text-stone-500 hover:text-stone-900 cursor-pointer"
@@ -61,7 +61,7 @@ export function DmModal({ isOpen, onClose, onSubmit }: DmModalProps) {
           />
           <button
             type="submit"
-            className="mt-2 w-full border border-stone-900 bg-stone-900 px-4 py-2 font-pixel-square text-xs sm:text-sm text-white transition hover:bg-stone-800"
+            className="mt-2 w-full border border-stone-900 bg-stone-900 px-4 py-2  text-xs sm:text-sm text-white transition hover:bg-stone-800"
           >
             Start Chat
           </button>

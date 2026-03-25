@@ -86,9 +86,7 @@ export default function ProtectedLayoutClient({
           }`}
         >
           <div className="flex h-full flex-col">
-            <h1 className="text-2xl font-pixel-square text-stone-900 px-4 py-3">
-              Toki
-            </h1>
+            <h1 className="text-2xl  text-stone-900 px-4 py-3">Toki</h1>
             <div className="h-px shrink-0 bg-stone-300" />
 
             <div className="relative mx-4 my-3 border border-stone-200 bg-stone-50">
@@ -98,8 +96,8 @@ export default function ProtectedLayoutClient({
               <span className="absolute -bottom-1 -right-1 size-2 border border-stone-300 bg-white" />
               <div className="flex items-center gap-3 px-4 py-3">
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-pixel-square text-base font-medium text-stone-900">
-                    {session?.user?.displayName}
+                  <p className="truncate  text-base font-medium text-stone-900">
+                    {session?.user?.displayName.toLowerCase()}.
                   </p>
                   <p className="truncate text-xs text-stone-500">
                     @{session?.user?.username}
@@ -110,7 +108,7 @@ export default function ProtectedLayoutClient({
 
             <div className="px-4 py-3 flex flex-col space-y-4">
               <div className="flex justify-between items-center">
-                <h1 className="font-pixel-square text-2xl">Rooms</h1>
+                <h1 className="tracking-tight font-medium text-2xl">Rooms</h1>
                 <HugeiconsIcon
                   icon={PlusSignIcon}
                   className="h-5 w-5 cursor-pointer text-stone-900"
@@ -119,51 +117,49 @@ export default function ProtectedLayoutClient({
               </div>
             </div>
 
-            <div className="h-px shrink-0 bg-stone-300" />
+            <div className="border-y border-stone-300">
+              <div className="grid min-h-0 grid-cols-[1.75rem_minmax(0,1fr)_1.75rem]">
+                <div className="bg-[repeating-linear-gradient(315deg,rgba(0,0,0,0.08)_0,rgba(0,0,0,0.08)_1px,transparent_0,transparent_50%)] bg-size-[6px_6px]" />
 
-            <div className="flex min-h-0">
-              <div className="w-7 shrink-0 border-r border-stone-200 bg-[repeating-linear-gradient(315deg,rgba(0,0,0,0.08)_0,rgba(0,0,0,0.08)_1px,transparent_0,transparent_50%)] bg-size-[6px_6px]" />
+                <div className="relative min-w-0 border-x border-stone-200 bg-white">
+                  <span className="absolute -top-1 -left-1 z-10 size-2 border border-stone-300 bg-stone-50" />
+                  <span className="absolute -top-1 -right-1 z-10 size-2 border border-stone-300 bg-stone-50" />
+                  <span className="absolute -bottom-1 -left-1 z-10 size-2 border border-stone-300 bg-stone-50" />
+                  <span className="absolute -bottom-1 -right-1 z-10 size-2 border border-stone-300 bg-stone-50" />
 
-              <div className="relative min-w-0 flex-1 border-x border-stone-200 bg-white">
-                <span className="absolute -top-1 -left-1 z-10 size-2 border border-stone-300 bg-stone-50" />
-                <span className="absolute -top-1 -right-1 z-10 size-2 border border-stone-300 bg-stone-50" />
-                <span className="absolute -bottom-1 -left-1 z-10 size-2 border border-stone-300 bg-stone-50" />
-                <span className="absolute -bottom-1 -right-1 z-10 size-2 border border-stone-300 bg-stone-50" />
+                  {rooms.length > 0 ? (
+                    <ul className="px-4 py-3">
+                      {rooms.map(room => (
+                        <li key={room.id} className="py-0.5">
+                          <a
+                            href={`/dashboard/rooms/${room.name.toLowerCase()}`}
+                            className="block text-sm font-medium text-stone-700 hover:text-stone-900"
+                          >
+                            {room.name}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="px-4 py-3 text-sm text-stone-500">
+                      No rooms available.{' '}
+                      <span
+                        className="cursor-pointer text-stone-950 underline decoration-2 underline-offset-2"
+                        onClick={() => router.push('/dashboard/rooms/create')}
+                      >
+                        Create
+                      </span>
+                    </p>
+                  )}
+                </div>
 
-                {rooms.length > 0 ? (
-                  <ul className="px-4 py-3">
-                    {rooms.map(room => (
-                      <li key={room.id} className="py-0.5">
-                        <a
-                          href={`/dashboard/rooms/${room.name.toLowerCase()}`}
-                          className="block text-sm font-medium text-stone-700 hover:text-stone-900"
-                        >
-                          {room.name}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="px-4 py-3 text-sm text-stone-500 font-pixel-square">
-                    No rooms available.{' '}
-                    <span
-                      className="text-stone-950 underline underline-offset-2 decoration-2 cursor-pointer"
-                      onClick={() => router.push('/dashboard/rooms/create')}
-                    >
-                      Create
-                    </span>
-                  </p>
-                )}
+                <div className="bg-[repeating-linear-gradient(315deg,rgba(0,0,0,0.08)_0,rgba(0,0,0,0.08)_1px,transparent_0,transparent_50%)] bg-size-[6px_6px]" />
               </div>
-
-              <div className="w-7 shrink-0 border-l border-stone-200 bg-[repeating-linear-gradient(315deg,rgba(0,0,0,0.08)_0,rgba(0,0,0,0.08)_1px,transparent_0,transparent_50%)] bg-size-[6px_6px]" />
             </div>
 
-            <div className="h-px shrink-0 bg-stone-300" />
-
-            <div className="px-4 py-4 flex flex-col space-y-4">
+            <div className="px-4 py-4 mt-4 flex flex-col space-y-4">
               <div className="flex justify-between items-center">
-                <h1 className="font-pixel-square text-2xl">DMs</h1>
+                <h1 className="tracking-tight font-medium text-2xl">DMs</h1>
                 <HugeiconsIcon
                   icon={PlusSignIcon}
                   className="h-5 w-5 cursor-pointer text-stone-900"
@@ -172,35 +168,33 @@ export default function ProtectedLayoutClient({
               </div>
             </div>
 
-            <div className="h-px shrink-0 bg-stone-300" />
+            <div className="border-y border-stone-300">
+              <div className="grid min-h-0 grid-cols-[1.75rem_minmax(0,1fr)_1.75rem]">
+                <div className="bg-[repeating-linear-gradient(315deg,rgba(0,0,0,0.08)_0,rgba(0,0,0,0.08)_1px,transparent_0,transparent_50%)] bg-size-[6px_6px]" />
 
-            <div className="flex min-h-0">
-              <div className="w-7 shrink-0 border-r border-stone-200 bg-[repeating-linear-gradient(315deg,rgba(0,0,0,0.08)_0,rgba(0,0,0,0.08)_1px,transparent_0,transparent_50%)] bg-size-[6px_6px]" />
+                <div className="relative min-w-0 border-x border-stone-200 bg-white">
+                  <span className="absolute -top-1 -left-1 z-10 size-2 border border-stone-300 bg-stone-50" />
+                  <span className="absolute -top-1 -right-1 z-10 size-2 border border-stone-300 bg-stone-50" />
+                  <span className="absolute -bottom-1 -left-1 z-10 size-2 border border-stone-300 bg-stone-50" />
+                  <span className="absolute -bottom-1 -right-1 z-10 size-2 border border-stone-300 bg-stone-50" />
 
-              <div className="relative min-w-0 flex-1 border-x border-stone-200 bg-white">
-                <span className="absolute -top-1 -left-1 z-10 size-2 border border-stone-300 bg-stone-50" />
-                <span className="absolute -top-1 -right-1 z-10 size-2 border border-stone-300 bg-stone-50" />
-                <span className="absolute -bottom-1 -left-1 z-10 size-2 border border-stone-300 bg-stone-50" />
-                <span className="absolute -bottom-1 -right-1 z-10 size-2 border border-stone-300 bg-stone-50" />
+                  <p className="px-4 py-3 text-sm text-stone-500">
+                    No DMs available.{' '}
+                    <span
+                      className="cursor-pointer text-stone-950 underline decoration-2 underline-offset-2"
+                      onClick={() => setIsDmModalOpen(true)}
+                    >
+                      Start one
+                    </span>
+                  </p>
+                </div>
 
-                <p className="px-4 py-3 text-sm text-stone-500 font-pixel-square">
-                  No DMs available.{' '}
-                  <span
-                    className="text-stone-950 underline underline-offset-2 decoration-2 cursor-pointer"
-                    onClick={() => setIsDmModalOpen(true)}
-                  >
-                    Start one
-                  </span>
-                </p>
+                <div className="bg-[repeating-linear-gradient(315deg,rgba(0,0,0,0.08)_0,rgba(0,0,0,0.08)_1px,transparent_0,transparent_50%)] bg-size-[6px_6px]" />
               </div>
-
-              <div className="w-7 shrink-0 border-l border-stone-200 bg-[repeating-linear-gradient(315deg,rgba(0,0,0,0.08)_0,rgba(0,0,0,0.08)_1px,transparent_0,transparent_50%)] bg-size-[6px_6px]" />
             </div>
 
-            <div className="h-px shrink-0 bg-stone-300" />
-
             <div className="mt-auto border-t border-stone-200 p-4">
-              <LogoutButton className="h-9 w-full rounded-none bg-stone-900 font-pixel-square text-white hover:bg-stone-800" />
+              <LogoutButton className="h-9 w-full rounded-none bg-stone-900  text-white hover:bg-stone-800" />
             </div>
           </div>
         </aside>
@@ -212,7 +206,7 @@ export default function ProtectedLayoutClient({
               className="h-5 w-5 cursor-pointer text-stone-900"
               onClick={() => setIsSidebarOpen(true)}
             />
-            <p className="text-sm font-medium text-stone-500 font-pixel-square tracking-wide">
+            <p className="text-sm font-medium text-stone-500  tracking-wide">
               {currentPath}
             </p>
           </header>

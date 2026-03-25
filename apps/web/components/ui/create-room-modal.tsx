@@ -6,10 +6,16 @@ import {
   LockPasswordIcon,
   HourglassIcon,
 } from '@hugeicons/core-free-icons';
-import { createRoomSchema, roomExpiryOptions } from '@xd/shared';
+import {
+  createRoomSchema,
+  roomExpiryOptions,
+  type CreateRoomInput,
+} from '@xd/shared';
 import { zodResolver } from '@hookform/resolvers/zod';
+import useCreateRoom from '@/hooks/use-create-room';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 
 interface CreateRoomModalProps {
   isOpen: boolean;
@@ -19,7 +25,8 @@ interface CreateRoomModalProps {
 export function CreateRoomModal({ isOpen, onClose }: CreateRoomModalProps) {
   const {
     register,
-    // handleSubmit,
+    handleSubmit,
+    reset,
     setValue, // -> writes new state
     watch, // -> reads current state
     formState: { errors },
@@ -34,7 +41,27 @@ export function CreateRoomModal({ isOpen, onClose }: CreateRoomModalProps) {
     },
   });
 
+  const createRoomMutation = useCreateRoom();
+
   const selectedExpiry = watch('expiresIn');
+
+  // handle submit
+  function onSubmit(data: CreateRoomInput) {
+    createRoomMutation.mutate(data, {
+      onSuccess: () => {
+        toast.success('Room created successfully');
+        reset({
+          name: '',
+          password: '',
+          expiresIn: 'never',
+        });
+        onClose();
+      },
+      onError: error => {
+        toast.error(error.message || 'Failed to create room');
+      },
+    });
+  }
 
   if (!isOpen) return null;
 
@@ -54,7 +81,7 @@ export function CreateRoomModal({ isOpen, onClose }: CreateRoomModalProps) {
 
         <div className="border-b border-stone-200 px-3 py-2 sm:px-4 sm:py-3">
           <div className="flex items-center justify-between">
-            <h2 className="font-pixel-square text-sm sm:text-base">
+            <h2 className="text-sm sm:text-base font-medium text-stone-900">
               Create Room
             </h2>
             <button
@@ -66,7 +93,10 @@ export function CreateRoomModal({ isOpen, onClose }: CreateRoomModalProps) {
           </div>
         </div>
 
-        <form className="space-y-3 p-3 sm:p-5">
+        <form
+          className="space-y-3 p-3 sm:p-5"
+          onSubmit={handleSubmit(onSubmit)}
+        >
           <div>
             <div className="relative">
               <HugeiconsIcon
@@ -135,13 +165,12 @@ export function CreateRoomModal({ isOpen, onClose }: CreateRoomModalProps) {
                       type="button"
                       aria-pressed={isSelected}
                       onClick={() => {
-                        console.log('setting expiresIn to', option);
                         setValue('expiresIn', option, {
                           shouldDirty: true,
                           shouldValidate: true,
                         });
                       }}
-                      className={`py-3 border border-dashed px-1 text-[11px] leading-none transition cursor-pointer font-medium ${
+                      className={`py-3 border border-dashed px-1 text-xs leading-none transition cursor-pointer font-medium ${
                         isSelected
                           ? 'border-stone-950 bg-stone-300/50 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.14)]'
                           : 'border-stone-300 bg-white text-stone-700 hover:border-stone-400 hover:bg-stone-50'
@@ -162,9 +191,10 @@ export function CreateRoomModal({ isOpen, onClose }: CreateRoomModalProps) {
 
           <button
             type="submit"
-            className="cursor-pointer mt-2 w-full border border-stone-900 bg-stone-900 px-4 py-2 font-pixel-square text-xs sm:text-sm text-white transition hover:bg-stone-800"
+            disabled={createRoomMutation.isPending}
+            className="cursor-pointer mt-2 w-full border border-stone-900 bg-stone-900 px-4 py-2  text-xs sm:text-sm text-white transition hover:bg-stone-800"
           >
-            Create Room
+            {createRoomMutation.isPending ? 'Creating Room...' : 'Create Room'}
           </button>
         </form>
       </div>

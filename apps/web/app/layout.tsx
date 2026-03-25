@@ -1,5 +1,4 @@
 import { QueryProvider } from '@/components/providers/query-provider';
-import { GeistPixelSquare } from 'geist/font/pixel';
 import { Toaster } from '@/components/ui/sonner';
 import { GeistMono } from 'geist/font/mono';
 import { Inter } from 'next/font/google';
@@ -20,9 +19,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${GeistMono.variable} ${GeistPixelSquare.variable} ${inter.variable} antialiased`}
-      >
+      <body className={`${GeistMono.variable} ${inter.variable} antialiased`}>
         <QueryProvider>{children}</QueryProvider>
         <Toaster position="top-right" richColors />
       </body>

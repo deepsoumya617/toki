@@ -91,7 +91,7 @@ export function SignInForm() {
         <span className="absolute -right-1 -bottom-1 z-10 size-2 bg-black" />
       </div>
       <div className="relative overflow-hidden rounded-none border border-dashed border-stone-300 bg-white px-4 pt-4 pb-5">
-        <div className="flex flex-col -space-y-4 mb-2.5 font-pixel-square">
+        <div className="flex flex-col -space-y-4 mb-2.5 ">
           <h1 className="text-xl tracking-tight">welcome</h1>
           <h1 className="text-[45px] tracking">back!</h1>
         </div>
@@ -143,7 +143,7 @@ export function SignInForm() {
 
           <Button
             type="submit"
-            className="h-10 w-full cursor-pointer rounded-none font-pixel-square bg-stone-900 hover:bg-stone-800 disabled:bg-stone-500 disabled:cursor-not-allowed"
+            className="h-10 w-full cursor-pointer rounded-none  bg-stone-900 hover:bg-stone-800 disabled:bg-stone-500 disabled:cursor-not-allowed"
             disabled={signInMutation.isPending}
           >
             {signInMutation.isPending ? 'Signing in...' : 'Sign in'}
@@ -151,7 +151,7 @@ export function SignInForm() {
         </form>
       </div>
 
-      <p className="mt-5 mb-3 text-center text-[0.8125rem] text-stone-500 font-pixel-square">
+      <p className="mt-5 mb-3 text-center text-[0.8125rem] text-stone-500 ">
         Don&apos;t have an account?{' '}
         <Link
           href="/sign-up"

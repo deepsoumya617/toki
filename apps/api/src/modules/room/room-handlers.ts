@@ -10,13 +10,11 @@ import { and, desc, eq } from 'drizzle-orm';
 import { db } from '@xd/db';
 
 const EXPIRY_TO_MS: Record<RoomExpiryOption, number | null> = {
-  '5m': 5 * 60 * 1000,
   '10m': 10 * 60 * 1000,
   '30m': 30 * 60 * 1000,
   '1h': 60 * 60 * 1000,
   '6h': 6 * 60 * 60 * 1000,
   '12h': 12 * 60 * 60 * 1000,
-  '1d': 24 * 60 * 60 * 1000,
   '3d': 3 * 24 * 60 * 60 * 1000,
   '7d': 7 * 24 * 60 * 60 * 1000,
   never: null,
