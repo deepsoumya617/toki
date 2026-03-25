@@ -15,13 +15,11 @@ const roomPasswordField = z
   .max(128, 'Room password must be less than 128 characters long');
 
 export const roomExpiryOptions = [
-  '5m',
   '10m',
   '30m',
   '1h',
   '6h',
   '12h',
-  '1d',
   '3d',
   '7d',
   'never',

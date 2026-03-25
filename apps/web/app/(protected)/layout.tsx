@@ -4,11 +4,11 @@ import {
   QueryClient,
 } from '@tanstack/react-query';
 import ProtectedLayoutClient from '@/components/layout/layout-client';
-import auth, { type SessionResponse } from '@/lib/auth';
 import { ROOMS_QUERY_KEY, SESSION_QUERY_KEY } from '@xd/shared';
+import auth, { type SessionResponse } from '@/lib/auth';
+import { roomClient } from '@/lib/room-client';
 import { redirect } from 'next/navigation';
 import { headers } from 'next/headers';
-import { roomClient } from '@/lib/room-client';
 
 export default async function ProtectedLayout({
   children,
@@ -34,7 +34,7 @@ export default async function ProtectedLayout({
   await queryClient.prefetchQuery({
     queryKey: ROOMS_QUERY_KEY.sidebar,
     queryFn: () => roomClient.getRooms({ cookie: h.get('cookie') || '' }),
-  })
+  });
 
   const session = queryClient.getQueryData<SessionResponse>(SESSION_QUERY_KEY);
 

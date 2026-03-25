@@ -2,10 +2,10 @@
 
 import { PanelLeftOpenIcon, PlusSignIcon } from '@hugeicons/core-free-icons';
 import { LogoutButton } from '@/components/auth/logout-button';
+import { CreateRoomModal } from '../ui/create-room-modal';
 import { usePathname, useRouter } from 'next/navigation';
 import { useSession } from '@/hooks/use-session';
 import { HugeiconsIcon } from '@hugeicons/react';
-import { ScrollArea } from '../ui/scroll-area';
 import { useRooms } from '@/hooks/use-rooms';
 import { useEffect, useState } from 'react';
 import { DmModal } from '../ui/dm-modal';
@@ -24,7 +24,13 @@ export default function ProtectedLayoutClient({
   const hasSession = session?.session !== null && session?.user !== null;
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  // dm modal
   const [isDmModalOpen, setIsDmModalOpen] = useState(false);
+
+  // create room modal
+  const [isCreateRoomModalOpen, setIsCreateRoomModalOpen] = useState(false);
+
   const currentPath = usePathname();
   const router = useRouter();
 
@@ -53,6 +59,10 @@ export default function ProtectedLayoutClient({
 
   return (
     <section className="h-dvh w-full select-none">
+      <CreateRoomModal
+        isOpen={isCreateRoomModalOpen}
+        onClose={() => setIsCreateRoomModalOpen(false)}
+      />
       <DmModal
         isOpen={isDmModalOpen}
         onClose={() => setIsDmModalOpen(false)}
@@ -104,7 +114,7 @@ export default function ProtectedLayoutClient({
                 <HugeiconsIcon
                   icon={PlusSignIcon}
                   className="h-5 w-5 cursor-pointer text-stone-900"
-                  onClick={() => router.push('/dashboard/rooms/create')}
+                  onClick={() => setIsCreateRoomModalOpen(true)}
                 />
               </div>
             </div>
