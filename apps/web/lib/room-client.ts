@@ -14,10 +14,10 @@ export const roomClient = {
     return await res.json();
   },
 
-    // create room
-    createRoom: async (input: CreateRoomInput) => {
-      const res = await client.api.room.create.$post({ json: input });
-      if (!res.ok) throw await parseApiError(res, 'Failed to create room');
-      return await res.json();
-    },
+  // create room
+  createRoom: async (input: CreateRoomInput) => {
+    const res = await client.api.room.create.$post({ json: input });
+    if (!res.ok) throw await parseApiError(res, 'Failed to create room');
+    return await res.json();
+  },
 };
