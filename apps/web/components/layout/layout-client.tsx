@@ -1,6 +1,7 @@
 'use client';
 
 import { PanelLeftOpenIcon, PlusSignIcon } from '@hugeicons/core-free-icons';
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 import { LogoutButton } from '@/components/auth/logout-button';
 import { CreateRoomModal } from '../ui/create-room-modal';
 import { usePathname, useRouter } from 'next/navigation';
@@ -8,6 +9,7 @@ import { useSession } from '@/hooks/use-session';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { useRooms } from '@/hooks/use-rooms';
 import { useEffect, useState } from 'react';
+import { Kbd } from '@/components/ui/kbd';
 import { DmModal } from '../ui/dm-modal';
 
 export default function ProtectedLayoutClient({
@@ -39,6 +41,30 @@ export default function ProtectedLayoutClient({
       router.replace('/sign-in');
     }
   }, [hasSession, isPending, router]);
+
+  // kbd shortcut -> create room
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.defaultPrevented || isCreateRoomModalOpen) return;
+
+      const target = e.target as HTMLElement | null;
+      const isTypingTarget =
+        target?.tagName === 'INPUT' ||
+        target?.tagName === 'TEXTAREA' ||
+        target?.tagName === 'SELECT' ||
+        target?.isContentEditable;
+
+      if (isTypingTarget) return;
+
+      if (e.key.toLowerCase() === 'c' && !e.metaKey && !e.ctrlKey) {
+        e.preventDefault();
+        setIsCreateRoomModalOpen(true);
+      }
+    };
+
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [isCreateRoomModalOpen]);
 
   if (isPending) {
     return (
@@ -109,11 +135,21 @@ export default function ProtectedLayoutClient({
             <div className="px-4 py-3 flex flex-col space-y-4">
               <div className="flex justify-between items-center">
                 <h1 className="tracking-tight font-medium text-2xl">Rooms</h1>
-                <HugeiconsIcon
-                  icon={PlusSignIcon}
-                  className="h-5 w-5 cursor-pointer text-stone-900"
-                  onClick={() => setIsCreateRoomModalOpen(true)}
-                />
+                <Tooltip>
+                  <TooltipTrigger>
+                    <HugeiconsIcon
+                      icon={PlusSignIcon}
+                      className="h-5 w-5 cursor-pointer"
+                      onClick={() => setIsCreateRoomModalOpen(true)}
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-stone-900 px-2 py-1.5 text-xs text-white uppercase font-mono">
+                    <div className="flex items-center gap-2">
+                      <span>Create Room</span>
+                      <Kbd className="font-mono">c</Kbd>
+                    </div>
+                  </TooltipContent>
+                </Tooltip>
               </div>
             </div>
 

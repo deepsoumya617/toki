@@ -2,7 +2,6 @@
 
 import {
   UserGroupIcon,
-  Cancel01Icon,
   LockPasswordIcon,
   HourglassIcon,
 } from '@hugeicons/core-free-icons';
@@ -15,7 +14,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import useCreateRoom from '@/hooks/use-create-room';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { useForm } from 'react-hook-form';
+import { useEffect } from 'react';
 import { toast } from 'sonner';
+import { Kbd } from './kbd';
 
 interface CreateRoomModalProps {
   isOpen: boolean;
@@ -63,15 +64,27 @@ export function CreateRoomModal({ isOpen, onClose }: CreateRoomModalProps) {
     });
   }
 
+  // kbd shortcut -> close modal on esc
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.repeat) return;
+      if (e.key === 'Escape') onClose();
+    };
+
+    if (isOpen) {
+      window.addEventListener('keydown', onKeyDown);
+    }
+
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  }, [onClose]);
+
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
-      <div
-        className="absolute inset-0 bg-black/40"
-        onClick={onClose}
-        aria-hidden="true"
-      />
+      <div className="absolute inset-0 bg-black/40" aria-hidden="true" />
 
       <div className="relative z-10 w-full border border-stone-200 bg-white sm:w-88">
         <span className="absolute -top-1 -left-1 size-2 border border-stone-300 bg-white hidden sm:block" />
@@ -84,12 +97,7 @@ export function CreateRoomModal({ isOpen, onClose }: CreateRoomModalProps) {
             <h2 className="text-sm sm:text-base font-medium text-stone-900">
               Create Room
             </h2>
-            <button
-              onClick={onClose}
-              className="text-stone-500 hover:text-stone-900 cursor-pointer"
-            >
-              <HugeiconsIcon icon={Cancel01Icon} className="h-4 w-4" />
-            </button>
+            <Kbd className="font-mono">esc</Kbd>
           </div>
         </div>
 
