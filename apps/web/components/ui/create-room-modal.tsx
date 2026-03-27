@@ -14,7 +14,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import useCreateRoom from '@/hooks/use-create-room';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { useForm } from 'react-hook-form';
-import { useEffect } from 'react';
 import { toast } from 'sonner';
 import { Kbd } from './kbd';
 
@@ -63,22 +62,6 @@ export function CreateRoomModal({ isOpen, onClose }: CreateRoomModalProps) {
       },
     });
   }
-
-  // kbd shortcut -> close modal on esc
-  useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.repeat) return;
-      if (e.key === 'Escape') onClose();
-    };
-
-    if (isOpen) {
-      window.addEventListener('keydown', onKeyDown);
-    }
-
-    return () => {
-      window.removeEventListener('keydown', onKeyDown);
-    };
-  }, [onClose]);
 
   if (!isOpen) return null;
 

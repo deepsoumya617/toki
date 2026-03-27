@@ -1,6 +1,10 @@
 'use client';
 
-import { PanelLeftOpenIcon, PlusSignIcon } from '@hugeicons/core-free-icons';
+import {
+  PanelLeftOpenIcon,
+  PlusSignIcon,
+  ArrowUpRight02Icon,
+} from '@hugeicons/core-free-icons';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 import { LogoutButton } from '@/components/auth/logout-button';
 import { CreateRoomModal } from '../ui/create-room-modal';
@@ -42,10 +46,10 @@ export default function ProtectedLayoutClient({
     }
   }, [hasSession, isPending, router]);
 
-  // kbd shortcut -> create room
+  // kbd shortcuts
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.defaultPrevented || isCreateRoomModalOpen) return;
+      if (e.defaultPrevented) return;
 
       const target = e.target as HTMLElement | null;
       const isTypingTarget =
@@ -54,14 +58,28 @@ export default function ProtectedLayoutClient({
         target?.tagName === 'SELECT' ||
         target?.isContentEditable;
 
+      if (e.key === 'Escape' && isCreateRoomModalOpen) {
+        e.preventDefault();
+        setIsCreateRoomModalOpen(false);
+        return;
+      }
+
       if (isTypingTarget) return;
 
-      if (e.key.toLowerCase() === 'c' && !e.metaKey && !e.ctrlKey) {
-        e.preventDefault();
-        setIsCreateRoomModalOpen(true);
+      if (!isCreateRoomModalOpen && !e.metaKey && !e.ctrlKey) {
+        // open create-room modal
+        if (e.key.toLowerCase() === 'c') {
+          e.preventDefault();
+          setIsCreateRoomModalOpen(true);
+        }
+
+        // open all rooms page
+        if (e.key.toLowerCase() === 'a') {
+          e.preventDefault();
+          router.push('/dashboard/rooms');
+        }
       }
     };
-
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [isCreateRoomModalOpen]);
@@ -135,21 +153,36 @@ export default function ProtectedLayoutClient({
             <div className="px-4 py-3 flex flex-col space-y-4">
               <div className="flex justify-between items-center">
                 <h1 className="tracking-tight font-medium text-2xl">Rooms</h1>
-                <Tooltip>
-                  <TooltipTrigger>
-                    <HugeiconsIcon
-                      icon={PlusSignIcon}
-                      className="h-5 w-5 cursor-pointer"
-                      onClick={() => setIsCreateRoomModalOpen(true)}
-                    />
-                  </TooltipTrigger>
-                  <TooltipContent className="bg-stone-900 px-2 py-1.5 text-xs text-white uppercase font-mono">
-                    <div className="flex items-center gap-2">
-                      <span>Create Room</span>
-                      <Kbd className="font-mono">c</Kbd>
-                    </div>
-                  </TooltipContent>
-                </Tooltip>
+                <div className="flex items-center gap-2">
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <HugeiconsIcon
+                        icon={ArrowUpRight02Icon}
+                        className="h-5 w-5 cursor-pointer"
+                        onClick={() => router.push('/dashboard/rooms')}
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent className="bg-stone-900 px-2 py-1.5 text-xs text-white uppercase font-mono">
+                      <span>All Rooms</span>
+                      <Kbd className="font-mono">a</Kbd>
+                    </TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <HugeiconsIcon
+                        icon={PlusSignIcon}
+                        className="h-5 w-5 cursor-pointer"
+                        onClick={() => setIsCreateRoomModalOpen(true)}
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent className="bg-stone-900 px-2 py-1.5 text-xs text-white uppercase font-mono">
+                      <div className="flex items-center gap-2">
+                        <span>Create Room</span>
+                        <Kbd className="font-mono">c</Kbd>
+                      </div>
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
               </div>
             </div>
 
