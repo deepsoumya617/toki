@@ -30,10 +30,18 @@ export default async function ProtectedLayout({
     queryFn: () => auth.api.getSession({ headers: h }),
   });
 
-  // fetch rooms
+  // fetch rooms -> for sidebar
   await queryClient.prefetchQuery({
     queryKey: ROOMS_QUERY_KEY.sidebar,
-    queryFn: () => roomClient.getRoomsSidebar({ cookie: h.get('cookie') || '' }),
+    queryFn: () =>
+      roomClient.getRoomsSidebar({ cookie: h.get('cookie') || '' }),
+  });
+
+  // fetch all rooms
+  await queryClient.prefetchInfiniteQuery({
+    queryKey: ROOMS_QUERY_KEY.all,
+    queryFn: () => roomClient.getRoomsAll({ cookie: h.get('cookie') || '' }),
+    initialPageParam: null,
   });
 
   const session = queryClient.getQueryData<SessionResponse>(SESSION_QUERY_KEY);

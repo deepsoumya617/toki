@@ -149,6 +149,8 @@ export async function getRoomsHandler(
       id: rooms.id,
       name: rooms.name,
       createdAt: rooms.createdAt,
+      expiresAt: rooms.expiresAt,
+      ownerId: rooms.ownerId,
       membersCount: db.$count(roomMembers, eq(roomMembers.roomId, rooms.id)),
     })
     .from(roomMembers)

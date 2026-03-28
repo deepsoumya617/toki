@@ -54,11 +54,23 @@ const room = new Hono<{ Variables: HonoVariables }>()
     // get cursor
     const cursor = id && createdAt ? { id, createdAt } : undefined;
 
-    const rooms = await getRoomsHandler(session.userId, cursor, limit);
+    const { allRooms, nextCursor, hasNextPage } = await getRoomsHandler(
+      session.userId,
+      cursor,
+      limit
+    );
+
+    // compute isOwner and strip ownerId from the response
+    const rooms = allRooms.map(({ ownerId, ...room }) => ({
+      ...room,
+      isOwner: ownerId === session.userId,
+    }));
 
     return c.json({
       success: true,
-      rooms,
+      allRooms: rooms,
+      nextCursor,
+      hasNextPage,
     });
   })
   .get('/my/sidebar', async c => {

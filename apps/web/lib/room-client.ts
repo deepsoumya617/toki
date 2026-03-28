@@ -19,17 +19,22 @@ export const roomClient = {
   getRoomsAll: async ({
     cursor,
     limit,
+    cookie,
   }: {
     cursor?: Cursor;
     limit?: number;
+    cookie?: string;
   }) => {
-    const res = await client.api.room.my.$get({
-      query: {
-        id: cursor?.id,
-        createdAt: cursor?.createdAt,
-        limit: limit?.toString(),
+    const res = await client.api.room.my.$get(
+      {
+        query: {
+          id: cursor?.id,
+          createdAt: cursor?.createdAt,
+          limit: limit?.toString(),
+        },
       },
-    });
+      { headers: cookie ? { cookie } : {} }
+    );
 
     if (!res.ok) throw await parseApiError(res, 'Failed to fetch rooms');
 
