@@ -1,12 +1,34 @@
+import type { Cursor } from '@apps/api/src/modules/room/room-handlers';
 import type { CreateRoomInput } from '@xd/shared';
 import { parseApiError } from './api-error';
 import { client } from './client';
 
 export const roomClient = {
-  // get rooms
-  getRooms: async (options?: { cookie?: string }) => {
+  // get rooms for sidebar
+  getRoomsSidebar: async (options?: { cookie?: string }) => {
     const res = await client.api.room.my.sidebar.$get(undefined, {
       headers: options?.cookie ? { cookie: options.cookie } : {},
+    });
+
+    if (!res.ok) throw await parseApiError(res, 'Failed to fetch rooms');
+
+    return await res.json();
+  },
+
+  // /rooms page
+  getRoomsAll: async ({
+    cursor,
+    limit,
+  }: {
+    cursor?: Cursor;
+    limit?: number;
+  }) => {
+    const res = await client.api.room.my.$get({
+      query: {
+        id: cursor?.id,
+        createdAt: cursor?.createdAt,
+        limit: limit?.toString(),
+      },
     });
 
     if (!res.ok) throw await parseApiError(res, 'Failed to fetch rooms');

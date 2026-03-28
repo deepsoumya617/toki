@@ -49,12 +49,12 @@ const room = new Hono<{ Variables: HonoVariables }>()
   )
   .get('/my', zValidator('query', roomQuerySchema), async c => {
     const session = c.get('session');
-    const { id, createdAt } = c.req.valid('query');
+    const { id, createdAt, limit } = c.req.valid('query');
 
     // get cursor
     const cursor = id && createdAt ? { id, createdAt } : undefined;
 
-    const rooms = await getRoomsHandler(session.userId, cursor);
+    const rooms = await getRoomsHandler(session.userId, cursor, limit);
 
     return c.json({
       success: true,

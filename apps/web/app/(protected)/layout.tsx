@@ -33,7 +33,7 @@ export default async function ProtectedLayout({
   // fetch rooms
   await queryClient.prefetchQuery({
     queryKey: ROOMS_QUERY_KEY.sidebar,
-    queryFn: () => roomClient.getRooms({ cookie: h.get('cookie') || '' }),
+    queryFn: () => roomClient.getRoomsSidebar({ cookie: h.get('cookie') || '' }),
   });
 
   const session = queryClient.getQueryData<SessionResponse>(SESSION_QUERY_KEY);

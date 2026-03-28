@@ -5,7 +5,8 @@ import { ROOMS_QUERY_KEY } from '@xd/shared';
 export function useRooms() {
   return useQuery({
     queryKey: ROOMS_QUERY_KEY.sidebar,
-    queryFn: () => roomClient.getRooms(),
+    queryFn: () => roomClient.getRoomsSidebar(),
     select: data => data.rooms,
+    staleTime: 60 * 1000,
   });
 }

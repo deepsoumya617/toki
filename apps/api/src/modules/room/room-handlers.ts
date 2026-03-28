@@ -9,7 +9,7 @@ import { roomMembers } from '@xd/db/schema/room-members';
 import { and, desc, eq, lt, or } from 'drizzle-orm';
 import { db } from '@xd/db';
 
-interface Cursor {
+export interface Cursor {
   id: string;
   createdAt: string;
 }
