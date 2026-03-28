@@ -21,6 +21,8 @@ export const rooms = pgTable(
   table => [
     index('idx_rooms_owner_id').on(table.ownerId),
     index('idx_rooms_expires_at').on(table.expiresAt),
+    // for pagination
+    index('idx_rooms_created_at_id').on(table.createdAt, table.id),
   ]
 );
 

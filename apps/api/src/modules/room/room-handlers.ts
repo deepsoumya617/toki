@@ -6,8 +6,13 @@ import {
 import type { CreateRoomInput, RoomExpiryOption } from '@xd/shared';
 import { rooms, type PublicRoom } from '@xd/db/schema/rooms';
 import { roomMembers } from '@xd/db/schema/room-members';
-import { and, desc, eq } from 'drizzle-orm';
+import { and, desc, eq, lt, or } from 'drizzle-orm';
 import { db } from '@xd/db';
+
+interface Cursor {
+  id: string;
+  createdAt: string;
+}
 
 const EXPIRY_TO_MS: Record<RoomExpiryOption, number | null> = {
   '10m': 10 * 60 * 1000,
@@ -115,8 +120,62 @@ export async function joinRoomHandler(
   };
 }
 
+// get all rooms -> /rooms page
+export async function getRoomsHandler(
+  userId: string,
+  cursor?: Cursor,
+  limit = 10
+) {
+  // prepare the conditions array
+  const conditions = [eq(roomMembers.userId, userId)];
+
+  if (cursor) {
+    conditions.push(
+      or(
+        // < createdAt
+        lt(rooms.createdAt, cursor.createdAt),
+        and(
+          // = createdAt
+          eq(rooms.createdAt, cursor.createdAt),
+          // compare the id
+          lt(rooms.id, cursor.id)
+        )
+      )!
+    );
+  }
+
+  const res = await db
+    .select({
+      id: rooms.id,
+      name: rooms.name,
+      createdAt: rooms.createdAt,
+      membersCount: db.$count(roomMembers, eq(roomMembers.roomId, rooms.id)),
+    })
+    .from(roomMembers)
+    .innerJoin(rooms, eq(roomMembers.roomId, rooms.id))
+    .where(and(...conditions))
+    .orderBy(desc(rooms.createdAt), desc(rooms.id))
+    .limit(limit + 1);
+
+  // limit = 10 -> i asked for 11 -> fetched 11 -> next page exists
+  const hasNextPage = res.length > limit;
+  const roomsData = hasNextPage ? res.slice(0, limit) : res;
+
+  // get the next cursor
+  const lastRoom = roomsData.at(-1);
+  const nextCursor =
+    hasNextPage && lastRoom
+      ? {
+          createdAt: lastRoom.createdAt,
+          id: lastRoom.id,
+        }
+      : null;
+
+  return { allRooms: roomsData, nextCursor, hasNextPage };
+}
+
 // get all rooms for a member -> for sidebar
-export async function getRoomsHandler(userId: string) {
+export async function getSidebarRoomsHandler(userId: string) {
   const allRooms = await db
     .select({
       id: rooms.id,

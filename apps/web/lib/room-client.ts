@@ -5,7 +5,7 @@ import { client } from './client';
 export const roomClient = {
   // get rooms
   getRooms: async (options?: { cookie?: string }) => {
-    const res = await client.api.room.my.$get(undefined, {
+    const res = await client.api.room.my.sidebar.$get(undefined, {
       headers: options?.cookie ? { cookie: options.cookie } : {},
     });
 

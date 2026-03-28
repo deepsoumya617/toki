@@ -82,7 +82,7 @@ export default function ProtectedLayoutClient({
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [isCreateRoomModalOpen]);
+  }, [isCreateRoomModalOpen, router]);
 
   if (isPending) {
     return (

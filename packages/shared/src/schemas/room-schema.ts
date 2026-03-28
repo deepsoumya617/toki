@@ -59,6 +59,11 @@ export const roomIdParamSchema = z.object({
   roomId: z.uuid('Invalid room id'),
 });
 
+export const roomQuerySchema = z.object({
+  createdAt: z.iso.datetime().optional(),
+  id: z.uuid('Invalid room id').optional(),
+});
+
 // infer inputs
 export type CreateRoomInput = z.infer<typeof createRoomSchema>;
 export type JoinRoomInput = z.infer<typeof joinRoomSchema>;

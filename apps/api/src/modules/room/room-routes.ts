@@ -2,6 +2,7 @@ import {
   createRoomHandler,
   getRoomByIdHandler,
   getRoomsHandler,
+  getSidebarRoomsHandler,
   joinRoomHandler,
   leaveRoomByIdHandler,
 } from './room-handlers';
@@ -9,6 +10,7 @@ import {
   createRoomSchema,
   joinRoomSchema,
   roomIdParamSchema,
+  roomQuerySchema,
 } from '@xd/shared';
 import { sessionMiddleware } from '../../middleware/session-middleware';
 import type { HonoVariables } from '../auth/auth-routes';
@@ -45,9 +47,23 @@ const room = new Hono<{ Variables: HonoVariables }>()
       });
     }
   )
-  .get('/my', async c => {
+  .get('/my', zValidator('query', roomQuerySchema), async c => {
     const session = c.get('session');
-    const rooms = await getRoomsHandler(session.userId);
+    const { id, createdAt } = c.req.valid('query');
+
+    // get cursor
+    const cursor = id && createdAt ? { id, createdAt } : undefined;
+
+    const rooms = await getRoomsHandler(session.userId, cursor);
+
+    return c.json({
+      success: true,
+      rooms,
+    });
+  })
+  .get('/my/sidebar', async c => {
+    const session = c.get('session');
+    const rooms = await getSidebarRoomsHandler(session.userId);
 
     return c.json({
       success: true,
