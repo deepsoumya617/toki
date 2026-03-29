@@ -269,13 +269,13 @@ export default function ProtectedLayoutClient({
         </aside>
 
         <div className="flex min-w-0 flex-1 flex-col">
-          <header className="flex items-center justify-between border-b border-stone-200 px-3 py-3 md:hidden">
+          <header className="flex items-center justify-between border-b border-stone-200 px-5 py-3 md:hidden">
             <HugeiconsIcon
               icon={PanelLeftOpenIcon}
               className="h-5 w-5 cursor-pointer text-stone-900"
               onClick={() => setIsSidebarOpen(true)}
             />
-            <p className="text-sm font-medium text-stone-500  tracking-wide">
+            <p className="text-xs font-medium text-stone-500 tracking-wide font-mono uppercase ">
               {currentPath}
             </p>
           </header>
