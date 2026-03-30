@@ -6,7 +6,7 @@ export const sessions = pgTable(
   {
     id: uuid('id').primaryKey().defaultRandom(),
     user_id: uuid('user_id')
-      .references(() => users.id)
+      .references(() => users.id, { onDelete: 'cascade' })
       .notNull(),
     token: varchar('token', { length: 255 }).notNull().unique(),
     expires_at: timestamp('expires_at', {
