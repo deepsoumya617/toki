@@ -27,13 +27,13 @@ export async function createSession(userId: string): Promise<string> {
   const [session] = await db
     .insert(sessions)
     .values({
-      userId,
+      user_id: userId,
       token,
-      expiresAt,
+      expires_at: expiresAt,
     })
     .returning({
       id: sessions.id,
-      expiresAt: sessions.expiresAt,
+      expires_at: sessions.expires_at,
     });
 
   if (!session) throw new Error('Failed to create session');
@@ -41,7 +41,7 @@ export async function createSession(userId: string): Promise<string> {
   const payload: SessionPayload = {
     sessionId: session.id,
     userId,
-    expiresAt: session.expiresAt,
+    expiresAt: session.expires_at,
   };
 
   const redisKey = `${REDIS_SESSION_PREFIX}${token}`;
@@ -85,7 +85,7 @@ export async function getSession(token: string): Promise<SessionPayload> {
   const [dbSession] = await db
     .select()
     .from(sessions)
-    .where(and(eq(sessions.token, token), gt(sessions.expiresAt, new Date())));
+    .where(and(eq(sessions.token, token), gt(sessions.expires_at, new Date())));
 
   if (!dbSession) {
     // not in redis, so dont delete from redis
@@ -95,8 +95,8 @@ export async function getSession(token: string): Promise<SessionPayload> {
 
   const sessionData: SessionPayload = {
     sessionId: dbSession.id,
-    userId: dbSession.userId,
-    expiresAt: dbSession.expiresAt,
+    userId: dbSession.user_id,
+    expiresAt: dbSession.expires_at,
   };
 
   // cache in redis

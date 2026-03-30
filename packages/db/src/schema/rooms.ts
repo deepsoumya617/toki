@@ -7,22 +7,22 @@ export const rooms = pgTable(
     id: uuid('id').primaryKey().defaultRandom(),
     name: varchar('name', { length: 255 }).notNull(),
     password: varchar('password', { length: 255 }).notNull(),
-    ownerId: uuid('owner_id')
+    owner_id: uuid('owner_id')
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
-    expiresAt: timestamp('expires_at', {
+    expires_at: timestamp('expires_at', {
       mode: 'string',
       withTimezone: true,
     }),
-    createdAt: timestamp('created_at', { mode: 'string', withTimezone: true })
+    created_at: timestamp('created_at', { mode: 'string', withTimezone: true })
       .defaultNow()
       .notNull(),
   },
   table => [
-    index('idx_rooms_owner_id').on(table.ownerId),
-    index('idx_rooms_expires_at').on(table.expiresAt),
+    index('idx_rooms_owner_id').on(table.owner_id),
+    index('idx_rooms_expires_at').on(table.expires_at),
     // for pagination
-    index('idx_rooms_created_at_id').on(table.createdAt, table.id),
+    index('idx_rooms_created_at_id').on(table.created_at, table.id),
   ]
 );
 

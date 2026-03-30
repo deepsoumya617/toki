@@ -155,7 +155,7 @@ export function RoomsList() {
       <div className="max-h-[62vh] overflow-y-auto divide-y divide-stone-100 dark:divide-stone-800/80">
         {rooms.length > 0 ? (
           rooms.map(room => {
-            const expires = formatExpiresAt(room.expiresAt);
+            const expires = formatExpiresAt(room.expires_at);
 
             return (
               <div
@@ -175,7 +175,7 @@ export function RoomsList() {
                       {room.membersCount} member
                       {room.membersCount !== 1 ? 's' : ''}
                       {' · '}
-                      {formatCreatedAt(room.createdAt)}
+                      {formatCreatedAt(room.created_at)}
                       {' · '}
                       <span
                         className={
@@ -209,9 +209,9 @@ export function RoomsList() {
 
                   <p
                     className="text-right text-xs tabular-nums text-stone-500 dark:text-stone-400"
-                    title={formatDate(room.createdAt)}
+                    title={formatDate(room.created_at)}
                   >
-                    {formatCreatedAt(room.createdAt)}
+                    {formatCreatedAt(room.created_at)}
                   </p>
 
                   <p
@@ -222,7 +222,7 @@ export function RoomsList() {
                         : 'text-stone-500 dark:text-stone-400'
                     )}
                     title={
-                      room.expiresAt ? formatDate(room.expiresAt) : 'Never'
+                      room.expires_at ? formatDate(room.expires_at) : 'Never'
                     }
                   >
                     {expires.label}

@@ -42,8 +42,8 @@ export async function createRoomHandler(
   //hash password
   const hash = await Bun.password.hash(password, 'bcrypt');
 
-  // calculate expiresAt
-  const expiresAt = getExpiresAt(expiresIn);
+  // calculate expires_at
+  const expires_at = getExpiresAt(expiresIn);
 
   // create room + insert in room-members
   const room = await db.transaction(async tx => {
@@ -52,22 +52,22 @@ export async function createRoomHandler(
       .values({
         name,
         password: hash,
-        ownerId: userId,
-        expiresAt,
+        owner_id: userId,
+        expires_at,
       })
       .returning({
         id: rooms.id,
         name: rooms.name,
-        ownerId: rooms.ownerId,
-        expiresAt: rooms.expiresAt,
-        createdAt: rooms.createdAt,
+        owner_id: rooms.owner_id,
+        expires_at: rooms.expires_at,
+        created_at: rooms.created_at,
       });
 
     if (!createdRoom) throw new Error('Failed to create room');
 
     await tx.insert(roomMembers).values({
-      roomId: createdRoom.id,
-      userId,
+      room_id: createdRoom.id,
+      user_id: userId,
     });
 
     return createdRoom;
@@ -87,7 +87,7 @@ export async function joinRoomHandler(
 
   if (!room) throw new NotFoundError('Room not found');
 
-  if (room.expiresAt && new Date(room.expiresAt).getTime() <= Date.now()) {
+  if (room.expires_at && new Date(room.expires_at).getTime() <= Date.now()) {
     throw new NotFoundError('Room not found');
   }
 
@@ -103,8 +103,8 @@ export async function joinRoomHandler(
   // else..
   const [member] = await db
     .insert(roomMembers)
-    .values({ roomId, userId })
-    .onConflictDoNothing({ target: [roomMembers.roomId, roomMembers.userId] })
+    .values({ room_id: roomId, user_id: userId })
+    .onConflictDoNothing({ target: [roomMembers.room_id, roomMembers.user_id] })
     .returning({ id: roomMembers.id });
 
   if (!member) {
@@ -114,9 +114,9 @@ export async function joinRoomHandler(
   return {
     id: room.id,
     name: room.name,
-    ownerId: room.ownerId,
-    expiresAt: room.expiresAt,
-    createdAt: room.createdAt,
+    owner_id: room.owner_id,
+    expires_at: room.expires_at,
+    created_at: room.created_at,
   };
 }
 
@@ -127,16 +127,16 @@ export async function getRoomsHandler(
   limit = 10
 ) {
   // prepare the conditions array
-  const conditions = [eq(roomMembers.userId, userId)];
+  const conditions = [eq(roomMembers.user_id, userId)];
 
   if (cursor) {
     conditions.push(
       or(
-        // < createdAt
-        lt(rooms.createdAt, cursor.createdAt),
+        // < created_at
+        lt(rooms.created_at, cursor.createdAt),
         and(
-          // = createdAt
-          eq(rooms.createdAt, cursor.createdAt),
+          // = created_at
+          eq(rooms.created_at, cursor.createdAt),
           // compare the id
           lt(rooms.id, cursor.id)
         )
@@ -148,15 +148,15 @@ export async function getRoomsHandler(
     .select({
       id: rooms.id,
       name: rooms.name,
-      createdAt: rooms.createdAt,
-      expiresAt: rooms.expiresAt,
-      ownerId: rooms.ownerId,
-      membersCount: db.$count(roomMembers, eq(roomMembers.roomId, rooms.id)),
+      created_at: rooms.created_at,
+      expires_at: rooms.expires_at,
+      owner_id: rooms.owner_id,
+      membersCount: db.$count(roomMembers, eq(roomMembers.room_id, rooms.id)),
     })
     .from(roomMembers)
-    .innerJoin(rooms, eq(roomMembers.roomId, rooms.id))
+    .innerJoin(rooms, eq(roomMembers.room_id, rooms.id))
     .where(and(...conditions))
-    .orderBy(desc(rooms.createdAt), desc(rooms.id))
+    .orderBy(desc(rooms.created_at), desc(rooms.id))
     .limit(limit + 1);
 
   // limit = 10 -> i asked for 11 -> fetched 11 -> next page exists
@@ -168,7 +168,7 @@ export async function getRoomsHandler(
   const nextCursor =
     hasNextPage && lastRoom
       ? {
-          createdAt: lastRoom.createdAt,
+          createdAt: lastRoom.created_at,
           id: lastRoom.id,
         }
       : null;
@@ -184,9 +184,9 @@ export async function getSidebarRoomsHandler(userId: string) {
       name: rooms.name,
     })
     .from(roomMembers)
-    .innerJoin(rooms, eq(roomMembers.roomId, rooms.id))
-    .where(eq(roomMembers.userId, userId))
-    .orderBy(desc(rooms.createdAt))
+    .innerJoin(rooms, eq(roomMembers.room_id, rooms.id))
+    .where(eq(roomMembers.user_id, userId))
+    .orderBy(desc(rooms.created_at))
     .limit(5);
 
   return allRooms;
@@ -198,20 +198,20 @@ export async function getRoomByIdHandler(roomId: string, userId: string) {
     .select({
       id: rooms.id,
       name: rooms.name,
-      ownerId: rooms.ownerId,
-      expiresAt: rooms.expiresAt,
-      createdAt: rooms.createdAt,
+      owner_id: rooms.owner_id,
+      expires_at: rooms.expires_at,
+      created_at: rooms.created_at,
     })
     .from(roomMembers)
-    .innerJoin(rooms, eq(roomMembers.roomId, rooms.id))
-    .where(and(eq(roomMembers.userId, userId), eq(rooms.id, roomId)));
+    .innerJoin(rooms, eq(roomMembers.room_id, rooms.id))
+    .where(and(eq(roomMembers.user_id, userId), eq(rooms.id, roomId)));
 
   if (!room) throw new NotFoundError('Room not found');
 
   return room;
 }
 
-// leaver room
+// leave room
 export async function leaveRoomByIdHandler(roomId: string, userId: string) {
   const [room] = await db.select().from(rooms).where(eq(rooms.id, roomId));
 
@@ -220,18 +220,22 @@ export async function leaveRoomByIdHandler(roomId: string, userId: string) {
   // check if user is owner
   // throw error for now
   // later we will delete the room and all the members if owner leaves
-  if (userId === room.ownerId)
+  if (userId === room.owner_id)
     throw new ConflictError('Room owner cannot leave the room');
 
   // check membership
   const [membership] = await db
     .select()
     .from(roomMembers)
-    .where(and(eq(roomMembers.roomId, roomId), eq(roomMembers.userId, userId)));
+    .where(
+      and(eq(roomMembers.room_id, roomId), eq(roomMembers.user_id, userId))
+    );
 
   if (!membership) throw new NotFoundError('You are not a member of this room');
 
   await db
     .delete(roomMembers)
-    .where(and(eq(roomMembers.roomId, roomId), eq(roomMembers.userId, userId)));
+    .where(
+      and(eq(roomMembers.room_id, roomId), eq(roomMembers.user_id, userId))
+    );
 }

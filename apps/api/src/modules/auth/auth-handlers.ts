@@ -27,13 +27,13 @@ export async function signUpHandler(input: SignUpInput): Promise<string> {
   const [existingUser] = await db
     .select()
     .from(users)
-    .where(or(eq(users.email, email), eq(users.username, username)));
+    .where(or(eq(users.email, email), eq(users.user_name, username)));
 
   if (existingUser) {
     if (existingUser.email === email) {
       throw new ConflictError('an account with this info already exists');
     }
-    if (existingUser.username === username) {
+    if (existingUser.user_name === username) {
       throw new ConflictError('username already taken');
     }
   }
@@ -46,9 +46,9 @@ export async function signUpHandler(input: SignUpInput): Promise<string> {
     .insert(users)
     .values({
       email,
-      username,
+      user_name: username,
       password: hash,
-      displayName,
+      display_name: displayName,
     })
     .returning({
       id: users.id,
@@ -81,7 +81,7 @@ export async function signInHandler(input: SignInInput): Promise<string> {
   return await createSession(user.id);
 }
 
-// logout>
+// logout
 export async function logoutHandler(token: string): Promise<void> {
   await deleteSession(token);
 }
@@ -92,10 +92,10 @@ export async function getCurrentUser(userId: string): Promise<PublicUser> {
     .select({
       id: users.id,
       email: users.email,
-      username: users.username,
-      displayName: users.displayName,
+      user_name: users.user_name,
+      display_name: users.display_name,
       status: users.status,
-      lastSeen: users.lastSeen,
+      last_seen: users.last_seen,
     })
     .from(users)
     .where(eq(users.id, userId));

@@ -141,10 +141,10 @@ export default function ProtectedLayoutClient({
               <div className="flex items-center gap-3 px-4 py-3">
                 <div className="min-w-0 flex-1">
                   <p className="truncate  text-base font-medium text-stone-900">
-                    {session?.user?.displayName.toLowerCase()}.
+                    {session?.user?.display_name.toLowerCase()}.
                   </p>
                   <p className="truncate text-xs text-stone-500">
-                    @{session?.user?.username}
+                    @{session?.user?.user_name}
                   </p>
                 </div>
               </div>

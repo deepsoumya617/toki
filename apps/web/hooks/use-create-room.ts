@@ -112,9 +112,9 @@ export default function useCreateRoom() {
         id: data.data.id,
         name: data.data.name,
         isOwner: true,
-        createdAt: data.data.createdAt,
+        createdAt: data.data.created_at,
         membersCount: 1,
-        expiresAt: data.data.expiresAt,
+        expiresAt: data.data.expires_at,
       };
 
       // sidebar cache

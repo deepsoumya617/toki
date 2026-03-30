@@ -61,9 +61,9 @@ const room = new Hono<{ Variables: HonoVariables }>()
     );
 
     // compute isOwner and strip ownerId from the response
-    const rooms = allRooms.map(({ ownerId, ...room }) => ({
+    const rooms = allRooms.map(({ owner_id, ...room }) => ({
       ...room,
-      isOwner: ownerId === session.userId,
+      isOwner: owner_id === session.userId,
     }));
 
     return c.json({

@@ -5,18 +5,18 @@ export const sessions = pgTable(
   'sessions',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    userId: uuid('user_id')
+    user_id: uuid('user_id')
       .references(() => users.id)
       .notNull(),
     token: varchar('token', { length: 255 }).notNull().unique(),
-    expiresAt: timestamp('expires_at', {
+    expires_at: timestamp('expires_at', {
       withTimezone: true,
     }).notNull(),
   },
   // indexes keyword = WHERE, ORDER BY, JOIN etc
   // unique, primary key = auto indexed
   table => [
-    index('sessions_user_id_idx').on(table.userId),
-    index('sessions_expires_at_idx').on(table.expiresAt),
+    index('sessions_user_id_idx').on(table.user_id),
+    index('sessions_expires_at_idx').on(table.expires_at),
   ]
 );
