@@ -56,7 +56,7 @@ function formatExpiresAt(value: string | null): {
   return { label: formatRelativeTime(value), expired: false };
 }
 
-const COLS = 'grid-cols-[minmax(0,1fr)_2.75rem_5rem_5.5rem]';
+const COLS = 'grid-cols-[minmax(0,14rem)_2.75rem_5.5rem_5.5rem]';
 const GAP = 'gap-x-6';
 
 const HEADER_CELL =
@@ -135,7 +135,7 @@ export function RoomsList() {
   const rooms = data?.rooms ?? [];
 
   return (
-    <div className="border border-stone-200 bg-white dark:border-stone-800 dark:bg-background">
+    <div className="border border-stone-200 bg-white dark:border-stone-800 dark:bg-background mt-10">
       <div
         className={cn(
           'hidden sm:grid',
@@ -148,8 +148,8 @@ export function RoomsList() {
       >
         <p className={HEADER_CELL}>Room</p>
         <p className={cn(HEADER_CELL, 'text-right')}>Mem</p>
-        <p className={cn(HEADER_CELL, 'text-right')}>Created</p>
-        <p className={HEADER_CELL}>Expires</p>
+        <p className={cn(HEADER_CELL, 'text-center')}>Created</p>
+        <p className={cn(HEADER_CELL, 'text-center')}>Expires</p>
       </div>
 
       <div className="max-h-[62vh] overflow-y-auto divide-y divide-stone-100 dark:divide-stone-800/80">
@@ -171,7 +171,7 @@ export function RoomsList() {
                     >
                       {room.name}
                     </p>
-                    <p className="mt-0.5 text-xs text-stone-500 dark:text-stone-400">
+                    <p className="mt-0.5 text-xs text-stone-600 dark:text-stone-300">
                       {room.membersCount} member
                       {room.membersCount !== 1 ? 's' : ''}
                       {' · '}
@@ -203,12 +203,12 @@ export function RoomsList() {
                     </p>
                   </div>
 
-                  <p className="text-right text-xs tabular-nums text-stone-500 dark:text-stone-400">
+                  <p className="text-right text-xs tabular-nums text-stone-500 dark:text-stone-300 font-medium">
                     {room.membersCount}
                   </p>
 
                   <p
-                    className="text-right text-xs tabular-nums text-stone-500 dark:text-stone-400"
+                    className="text-center text-xs tabular-nums text-stone-500 dark:text-stone-300 font-medium"
                     title={formatDate(room.created_at)}
                   >
                     {formatCreatedAt(room.created_at)}
@@ -216,10 +216,10 @@ export function RoomsList() {
 
                   <p
                     className={cn(
-                      'text-xs',
+                      'text-center text-xs font-medium',
                       expires.expired
                         ? 'text-red-500 dark:text-red-400'
-                        : 'text-stone-500 dark:text-stone-400'
+                        : 'text-stone-500 dark:text-stone-300'
                     )}
                     title={
                       room.expires_at ? formatDate(room.expires_at) : 'Never'
