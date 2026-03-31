@@ -218,10 +218,11 @@ export async function leaveRoomByIdHandler(roomId: string, userId: string) {
   if (!room) throw new NotFoundError('Room not found.');
 
   // check if user is owner
-  // throw error for now
-  // later we will delete the room and all the members if owner leaves
-  if (userId === room.owner_id)
-    throw new ConflictError('Room owner cannot leave the room');
+  // delete room and remove all members
+  if (userId === room.owner_id) {
+    await db.delete(rooms).where(eq(rooms.id, roomId));
+    return;
+  }
 
   // check membership
   const [membership] = await db

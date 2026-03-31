@@ -15,6 +15,13 @@
       "when": 1772470814676,
       "tag": "0001_chemical_ender_wiggin",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1774977811132,
+      "tag": "0002_closed_penance",
+      "breakpoints": true
     }
   ]
 }
