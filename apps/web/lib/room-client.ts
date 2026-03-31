@@ -1,5 +1,5 @@
 import type { Cursor } from '@apps/api/src/modules/room/room-handlers';
-import type { CreateRoomInput } from '@xd/shared';
+import type { CreateRoomInput, JoinRoomInput } from '@xd/shared';
 import { parseApiError } from './api-error';
 import { client } from './client';
 
@@ -45,6 +45,20 @@ export const roomClient = {
   createRoom: async (input: CreateRoomInput) => {
     const res = await client.api.room.create.$post({ json: input });
     if (!res.ok) throw await parseApiError(res, 'Failed to create room');
+    return await res.json();
+  },
+
+  // join room
+  joinRoom: async (roomId: string, input: JoinRoomInput) => {
+    const res = await client.api.room[':roomId'].join.$post({
+      param: {
+        roomId,
+      },
+      json: input,
+    });
+
+    if (!res.ok) throw await parseApiError(res, 'Failed to join room');
+
     return await res.json();
   },
 };
