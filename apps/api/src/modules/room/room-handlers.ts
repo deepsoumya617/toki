@@ -1,12 +1,17 @@
 import {
   ConflictError,
+  GoneError,
   NotFoundError,
   UnauthorizedError,
 } from '../../lib/errors';
-import type { CreateRoomInput, RoomExpiryOption } from '@xd/shared';
+import type {
+  CreateRoomInput,
+  RoomExpiryOption,
+  UpdateRoomInput,
+} from '@xd/shared';
+import { and, desc, eq, hasOwnEntityKind, lt, or } from 'drizzle-orm';
 import { rooms, type PublicRoom } from '@xd/db/schema/rooms';
 import { roomMembers } from '@xd/db/schema/room-members';
-import { and, desc, eq, lt, or } from 'drizzle-orm';
 import { db } from '@xd/db';
 
 export interface Cursor {
@@ -239,4 +244,58 @@ export async function leaveRoomByIdHandler(roomId: string, userId: string) {
     .where(
       and(eq(roomMembers.room_id, roomId), eq(roomMembers.user_id, userId))
     );
+}
+
+// update room details
+export async function updateRoomHandler(
+  roomId: string,
+  userId: string,
+  input: UpdateRoomInput
+) {
+  // check room
+  const [room] = await db
+    .select({
+      id: rooms.id,
+      name: rooms.name,
+      owner_id: rooms.owner_id,
+      expires_at: rooms.expires_at,
+      created_at: rooms.created_at,
+    })
+    .from(rooms)
+    .where(eq(rooms.id, roomId));
+
+  if (!room) throw new NotFoundError('Room not found');
+
+  // check ownership
+  if (room.owner_id !== userId)
+    throw new UnauthorizedError('Only the room owner can updated the room');
+
+  // check if room expired -> for now
+  // later will use a cron job to remove expired rooms
+  if (room.expires_at !== null && new Date().toISOString() > room.expires_at)
+    throw new GoneError();
+
+  const updateData: UpdateRoomInput = {};
+
+  if (input.name !== undefined) updateData.name = input.name;
+  if (input.password !== undefined)
+    updateData.password = await Bun.password.hash(input.password, 'bcrypt');
+  if (input.expiresIn !== undefined) updateData.expiresIn = input.expiresIn;
+
+  if (Object.keys(updateData).length === 0) return room;
+
+  // update room
+  const [updatedRoom] = await db
+    .update(rooms)
+    .set(updateData)
+    .where(eq(rooms.id, roomId))
+    .returning({
+      id: rooms.id,
+      name: rooms.name,
+      owner_id: rooms.owner_id,
+      expires_at: rooms.expires_at,
+      created_at: rooms.created_at,
+    });
+
+  return updatedRoom;
 }

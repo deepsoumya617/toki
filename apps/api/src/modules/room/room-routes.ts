@@ -5,12 +5,14 @@ import {
   getSidebarRoomsHandler,
   joinRoomHandler,
   leaveRoomByIdHandler,
+  updateRoomHandler,
 } from './room-handlers';
 import {
   createRoomSchema,
   joinRoomSchema,
   roomIdParamSchema,
   roomQuerySchema,
+  updateRoomSchema,
 } from '@xd/shared';
 import { sessionMiddleware } from '../../middleware/session-middleware';
 import type { HonoVariables } from '../auth/auth-routes';
@@ -102,6 +104,23 @@ const room = new Hono<{ Variables: HonoVariables }>()
     return c.json({
       success: true,
     });
-  });
+  })
+  .post(
+    '/:roomId/update',
+    zValidator('param', roomIdParamSchema),
+    zValidator('json', updateRoomSchema),
+    async c => {
+      const session = c.get('session');
+      const { roomId } = c.req.valid('param');
+      const input = c.req.valid('json');
+
+      const res = await updateRoomHandler(roomId, session.userId, input);
+
+      return c.json({
+        success: true,
+        res,
+      });
+    }
+  );
 
 export default room;

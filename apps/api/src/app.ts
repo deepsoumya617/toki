@@ -40,7 +40,7 @@ export const apiRoutes = app
   })
   // rest of the routes
   .route('/auth', authRoutes)
-  .route('/room', roomRoutes);
+  .route('/rooms', roomRoutes);
 
 // not found route
 app.notFound(c => {

@@ -37,3 +37,9 @@ export class ConflictError extends ApiError {
     super(409, 'CONFLICT', message);
   }
 }
+
+export class GoneError extends ApiError {
+  constructor(message = 'Resource is no longer available') {
+    super(410, 'GONE', message);
+  }
+}
