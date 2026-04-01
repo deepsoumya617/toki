@@ -9,6 +9,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 import { LogoutButton } from '@/components/auth/logout-button';
 import { CreateRoomModal } from '../ui/create-room-modal';
 import { usePathname, useRouter } from 'next/navigation';
+import JoinRoomModal from '../ui/join-room-modal';
 import { useSession } from '@/hooks/use-session';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { useRooms } from '@/hooks/use-rooms';
@@ -37,6 +38,9 @@ export default function ProtectedLayoutClient({
   // create room modal
   const [isCreateRoomModalOpen, setIsCreateRoomModalOpen] = useState(false);
 
+  // join room modal
+  const [isJoinRoomModalOpen, setIsJoinRoomModalOpen] = useState(false);
+
   const currentPath = usePathname();
   const router = useRouter();
 
@@ -58,9 +62,10 @@ export default function ProtectedLayoutClient({
         target?.tagName === 'SELECT' ||
         target?.isContentEditable;
 
-      if (e.key === 'Escape' && isCreateRoomModalOpen) {
+      if (e.key === 'Escape') {
         e.preventDefault();
-        setIsCreateRoomModalOpen(false);
+        if (isCreateRoomModalOpen) setIsCreateRoomModalOpen(false);
+        if (isJoinRoomModalOpen) setIsJoinRoomModalOpen(false);
         return;
       }
 
@@ -68,7 +73,7 @@ export default function ProtectedLayoutClient({
 
       if (!isCreateRoomModalOpen && !e.metaKey && !e.ctrlKey) {
         // open create-room modal
-        if (e.key.toLowerCase() === 'c') {
+        if (e.key.toLowerCase() === 'c' && !isJoinRoomModalOpen) {
           e.preventDefault();
           setIsCreateRoomModalOpen(true);
         }
@@ -82,7 +87,7 @@ export default function ProtectedLayoutClient({
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [isCreateRoomModalOpen, router]);
+  }, [isCreateRoomModalOpen, router, isJoinRoomModalOpen]);
 
   if (isPending) {
     return (
@@ -106,6 +111,10 @@ export default function ProtectedLayoutClient({
       <CreateRoomModal
         isOpen={isCreateRoomModalOpen}
         onClose={() => setIsCreateRoomModalOpen(false)}
+      />
+      <JoinRoomModal
+        isOpen={isJoinRoomModalOpen}
+        onClose={() => setIsJoinRoomModalOpen}
       />
       <DmModal
         isOpen={isDmModalOpen}
@@ -157,19 +166,6 @@ export default function ProtectedLayoutClient({
                   <Tooltip>
                     <TooltipTrigger>
                       <HugeiconsIcon
-                        icon={ArrowUpRight02Icon}
-                        className="h-5 w-5 cursor-pointer"
-                        onClick={() => router.push('/dashboard/rooms')}
-                      />
-                    </TooltipTrigger>
-                    <TooltipContent className="bg-stone-900 px-2 py-1.5 text-xs text-white uppercase font-mono">
-                      <span>All Rooms</span>
-                      <Kbd className="font-mono">a</Kbd>
-                    </TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <HugeiconsIcon
                         icon={PlusSignIcon}
                         className="h-5 w-5 cursor-pointer"
                         onClick={() => setIsCreateRoomModalOpen(true)}
@@ -180,6 +176,19 @@ export default function ProtectedLayoutClient({
                         <span>Create Room</span>
                         <Kbd className="font-mono">c</Kbd>
                       </div>
+                    </TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <HugeiconsIcon
+                        icon={ArrowUpRight02Icon}
+                        className="h-5 w-5 cursor-pointer"
+                        onClick={() => router.push('/dashboard/rooms')}
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent className="bg-stone-900 px-2 py-1.5 text-xs text-white uppercase font-mono">
+                      <span>All Rooms</span>
+                      <Kbd className="font-mono">a</Kbd>
                     </TooltipContent>
                   </Tooltip>
                 </div>

@@ -6,7 +6,7 @@ import { client } from './client';
 export const roomClient = {
   // get rooms for sidebar
   getRoomsSidebar: async (options?: { cookie?: string }) => {
-    const res = await client.api.room.my.sidebar.$get(undefined, {
+    const res = await client.api.rooms.my.sidebar.$get(undefined, {
       headers: options?.cookie ? { cookie: options.cookie } : {},
     });
 
@@ -25,7 +25,7 @@ export const roomClient = {
     limit?: number;
     cookie?: string;
   }) => {
-    const res = await client.api.room.my.$get(
+    const res = await client.api.rooms.my.$get(
       {
         query: {
           id: cursor?.id,
@@ -43,14 +43,14 @@ export const roomClient = {
 
   // create room
   createRoom: async (input: CreateRoomInput) => {
-    const res = await client.api.room.create.$post({ json: input });
+    const res = await client.api.rooms.create.$post({ json: input });
     if (!res.ok) throw await parseApiError(res, 'Failed to create room');
     return await res.json();
   },
 
   // join room
   joinRoom: async (roomId: string, input: JoinRoomInput) => {
-    const res = await client.api.room[':roomId'].join.$post({
+    const res = await client.api.rooms[':roomId'].join.$post({
       param: {
         roomId,
       },
