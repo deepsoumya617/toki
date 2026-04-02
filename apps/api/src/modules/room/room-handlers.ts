@@ -9,7 +9,7 @@ import type {
   RoomExpiryOption,
   UpdateRoomInput,
 } from '@xd/shared';
-import { and, desc, eq, hasOwnEntityKind, lt, or } from 'drizzle-orm';
+import { and, desc, eq, lt, or } from 'drizzle-orm';
 import { rooms, type PublicRoom } from '@xd/db/schema/rooms';
 import { roomMembers } from '@xd/db/schema/room-members';
 import { db } from '@xd/db';
