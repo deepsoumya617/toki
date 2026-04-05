@@ -21,6 +21,15 @@
     "lint:fix": "turbo run lint -- --fix",
     "prepare": "husky"
   },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix --max-warnings=0",
+      "prettier --write"
+    ],
+    "*.{json,md,css,scss,yml,yaml}": [
+      "prettier --write"
+    ]
+  },
   "devDependencies": {
     "husky": "^9.1.7",
     "prettier": "^3.7.4",

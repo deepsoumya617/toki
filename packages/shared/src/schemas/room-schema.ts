@@ -1,5 +1,5 @@
-import z from 'zod';
 import { roomExpiryOptions } from '../constants/room-constants';
+import z from 'zod';
 
 const roomNameField = z
   .string()
@@ -14,7 +14,6 @@ const roomPasswordField = z
   .min(1, 'Room password is required')
   .min(8, 'Room password must be at least 8 characters long')
   .max(128, 'Room password must be less than 128 characters long');
-
 
 export const roomExpirySchema = z.enum(roomExpiryOptions);
 

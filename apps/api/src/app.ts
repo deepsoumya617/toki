@@ -1,5 +1,5 @@
-import { errorHandler } from './middleware/error-middleware';
 import messageRoutes from './modules/message/message-routes';
+import { errorHandler } from './middleware/error-middleware';
 import roomRoutes from './modules/room/room-routes';
 import authRoutes from './modules/auth/auth-routes';
 import { prettyJSON } from 'hono/pretty-json';

@@ -1,10 +1,9 @@
 #!/usr/bin/env sh
+. "$(dirname "$0")/_/husky.sh"
 
 set -e
 
-echo "Running lint (fix) + format..."
-
-bun run lint:fix
-bun run format
+echo "Running lint-staged..."
+bunx lint-staged
 
 echo "Pre-commit checks passed"
