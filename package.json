@@ -22,12 +22,19 @@
     "prepare": "husky"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": [
-      "eslint --fix --max-warnings=0",
-      "prettier --write"
+    "apps/web/**/*.{js,jsx,ts,tsx}": [
+      "bun run --filter web lint -- --fix",
+      "bunx prettier --write"
+    ],
+    "apps/api/**/*.{js,jsx,ts,tsx}": [
+      "bun run --filter api lint -- --fix",
+      "bunx prettier --write"
+    ],
+    "packages/**/*.{js,jsx,ts,tsx}": [
+      "bunx prettier --write"
     ],
     "*.{json,md,css,scss,yml,yaml}": [
-      "prettier --write"
+      "bunx prettier --write"
     ]
   },
   "devDependencies": {
