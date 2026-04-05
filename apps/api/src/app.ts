@@ -1,4 +1,5 @@
 import { errorHandler } from './middleware/error-middleware';
+import messageRoutes from './modules/message/message-routes';
 import roomRoutes from './modules/room/room-routes';
 import authRoutes from './modules/auth/auth-routes';
 import { prettyJSON } from 'hono/pretty-json';
@@ -40,7 +41,8 @@ export const apiRoutes = app
   })
   // rest of the routes
   .route('/auth', authRoutes)
-  .route('/rooms', roomRoutes);
+  .route('/rooms', roomRoutes)
+  .route('/rooms', messageRoutes);
 
 // not found route
 app.notFound(c => {

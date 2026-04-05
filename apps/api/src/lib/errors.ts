@@ -43,3 +43,9 @@ export class GoneError extends ApiError {
     super(410, 'GONE', message);
   }
 }
+
+export class ForbiddenError extends ApiError {
+  constructor(message = 'Forbidden') {
+    super(403, 'FORBIDDEN', message);
+  }
+}

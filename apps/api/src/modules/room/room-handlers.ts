@@ -9,9 +9,9 @@ import type {
   RoomExpiryOption,
   UpdateRoomInput,
 } from '@xd/shared';
-import { and, desc, eq, lt, or } from 'drizzle-orm';
 import { rooms, type PublicRoom } from '@xd/db/schema/rooms';
 import { roomMembers } from '@xd/db/schema/room-members';
+import { and, desc, eq, lt, or } from 'drizzle-orm';
 import { db } from '@xd/db';
 
 export interface Cursor {
@@ -272,7 +272,7 @@ export async function updateRoomHandler(
 
   // check if room expired -> for now
   // later will use a cron job to remove expired rooms
-  if (room.expires_at !== null && new Date().toISOString() > room.expires_at)
+  if (room.expires_at && new Date().toISOString() > room.expires_at)
     throw new GoneError();
 
   const updateData: UpdateRoomInput = {};
