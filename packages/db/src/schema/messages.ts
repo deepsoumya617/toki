@@ -30,7 +30,7 @@ export const messages = pgTable(
   table => [
     index('idx_messages_room_id_created_at').on(
       table.room_id,
-      table.created_at
+      table.created_at.desc()
     ),
     index('idx_messages_user_id').on(table.user_id),
   ]

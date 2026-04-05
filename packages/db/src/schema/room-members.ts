@@ -15,7 +15,5 @@ export const roomMembers = pgTable(
   },
   table => [
     unique('uq_room_members_room_id_user_id').on(table.room_id, table.user_id),
-    index('idx_room_members_room_id').on(table.room_id),
-    index('idx_room_members_room_id_user_id').on(table.room_id, table.user_id),
   ]
 );
