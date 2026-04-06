@@ -1,4 +1,5 @@
 import {
+  boolean,
   index,
   pgEnum,
   pgTable,
@@ -23,9 +24,11 @@ export const messages = pgTable(
       .references(() => rooms.id, { onDelete: 'cascade' }),
     content: text('content').notNull(),
     type: messageTypeEnum('type').notNull().default('user'),
-    created_at: timestamp('created_at').notNull().defaultNow(),
-    deleted_at: timestamp('deleted_at'),
-    edited_at: timestamp('edited_at'),
+    is_edited: boolean('is_edited').notNull().default(false),
+    created_at: timestamp('created_at', { mode: 'string', withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    deleted_at: timestamp('deleted_at', { mode: 'string', withTimezone: true }),
   },
   table => [
     index('idx_messages_room_id_created_at').on(
