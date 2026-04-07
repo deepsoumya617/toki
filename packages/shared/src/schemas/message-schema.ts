@@ -1,11 +1,17 @@
 import z from 'zod';
 
+const contentSchema = z
+  .string()
+  .trim()
+  .min(1, 'Message cannot be empty')
+  .max(1000, 'Message is too long');
+
 export const createMessageSchema = z.object({
-  content: z
-    .string()
-    .trim()
-    .min(1, 'Message cannot be empty')
-    .max(1000, 'Message is too long'),
+  content: contentSchema,
+});
+
+export const updateMessageSchema = z.object({
+  content: contentSchema,
 });
 
 export const messageIdParamSchema = z.object({
