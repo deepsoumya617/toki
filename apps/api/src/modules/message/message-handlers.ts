@@ -1,4 +1,9 @@
-import { ForbiddenError, GoneError } from '../../lib/errors';
+import {
+  ForbiddenError,
+  GoneError,
+  NotFoundError,
+  UnauthorizedError,
+} from '../../lib/errors';
 import { roomMembers } from '@xd/db/schema/room-members';
 import type { Cursor } from '../room/room-handlers';
 import { and, desc, eq, lt, or } from 'drizzle-orm';
@@ -6,17 +11,23 @@ import { messages } from '@xd/db/schema/messages';
 import { rooms } from '@xd/db/schema/rooms';
 import { db } from '@xd/db';
 
-interface CreateMessageType {
+interface BaseMessageInputType {
   userId: string;
   roomId: string;
+}
+
+interface CreateMessageType extends BaseMessageInputType {
   content: string;
 }
 
-interface GetMessageType {
-  userId: string;
-  roomId: string;
+interface GetMessageType extends BaseMessageInputType {
   cursor?: Cursor;
   limit?: number;
+}
+
+interface UpdateMessageType extends BaseMessageInputType {
+  messageId: string;
+  content: string;
 }
 
 export async function createMessageHandler({
@@ -119,4 +130,63 @@ export async function getMessageHandler({
       : null;
 
   return { allMessage: messagesData, nextCursor, hasNextPage };
+}
+
+export async function updateMessageHandler({
+  userId,
+  roomId,
+  messageId,
+  content,
+}: UpdateMessageType) {
+  const [room] = await db
+    .select({ expires_at: rooms.expires_at })
+    .from(roomMembers)
+    .innerJoin(rooms, eq(roomMembers.room_id, rooms.id))
+    .where(
+      and(eq(roomMembers.room_id, roomId), eq(roomMembers.user_id, userId))
+    );
+
+  if (!room)
+    throw new ForbiddenError(
+      'Room does not exist or you are not a member of this room'
+    );
+
+  if (room.expires_at && new Date().toISOString() > room.expires_at)
+    throw new GoneError();
+
+  // validate message
+  const [message] = await db
+    .select()
+    .from(messages)
+    .where(and(eq(messages.id, messageId), eq(messages.room_id, roomId)));
+
+  // edge cases
+  // -> message not found
+  if (!message) throw new NotFoundError('Message not found');
+
+  // -> system message
+  if (message.type === 'system')
+    throw new ForbiddenError('System messages can not be edited');
+
+  // -> not owner
+  if (message.user_id && message.user_id !== userId)
+    throw new UnauthorizedError('You can not edit a message that is not yours');
+
+  // -> deleted
+  if (message.deleted_at)
+    throw new ForbiddenError('Can not edit a deleted message');
+
+  const [editedMessage] = await db
+    .update(messages)
+    .set({ content, is_edited: true })
+    .where(eq(messages.id, message.id))
+    .returning({
+      id: messages.id,
+      content: messages.content,
+      created_at: messages.created_at,
+    });
+
+  if (!editedMessage) throw new Error('Failed to update message');
+
+  return editedMessage;
 }

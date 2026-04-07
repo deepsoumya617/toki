@@ -1,13 +1,25 @@
 import {
   createMessageSchema,
+  messageIdParamSchema,
   messageQuerySchema,
   roomIdParamSchema,
+  updateMessageSchema,
 } from '@xd/shared';
-import { createMessageHandler, getMessageHandler } from './message-handlers';
+import {
+  createMessageHandler,
+  getMessageHandler,
+  updateMessageHandler,
+} from './message-handlers';
 import { sessionMiddleware } from '../../middleware/session-middleware';
 import type { HonoVariables } from '../auth/auth-routes';
 import { zValidator } from '@hono/zod-validator';
 import { Hono } from 'hono';
+
+// merge different param schemas
+// hono keeps the last one -> so other becomes undefined
+const roomMessageParamSchema = roomIdParamSchema.extend(
+  messageIdParamSchema.shape
+);
 
 const message = new Hono<{ Variables: HonoVariables }>()
   .use(sessionMiddleware)
@@ -54,6 +66,28 @@ const message = new Hono<{ Variables: HonoVariables }>()
       return c.json({
         success: true,
         ...res,
+      });
+    }
+  )
+  .patch(
+    '/:roomId/messages/:messageId',
+    zValidator('param', roomMessageParamSchema),
+    zValidator('json', updateMessageSchema),
+    async c => {
+      const { roomId, messageId } = c.req.valid('param');
+      const { content } = c.req.valid('json');
+      const session = c.get('session');
+
+      const res = await updateMessageHandler({
+        userId: session.userId,
+        roomId,
+        messageId,
+        content,
+      });
+
+      return c.json({
+        success: true,
+        message: res,
       });
     }
   );

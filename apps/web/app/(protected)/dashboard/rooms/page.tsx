@@ -1,4 +1,4 @@
-import { RoomsList } from '../../../../components/ui/rooms-list';
+import { RoomsList } from '@/components/ui/rooms-list';
 
 export default function RoomsPage() {
   return (
