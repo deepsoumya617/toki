@@ -7,6 +7,7 @@ import {
 } from '@xd/shared';
 import {
   createMessageHandler,
+  deleteMessageHandler,
   getMessageHandler,
   updateMessageHandler,
 } from './message-handlers';
@@ -88,6 +89,25 @@ const message = new Hono<{ Variables: HonoVariables }>()
       return c.json({
         success: true,
         message: res,
+      });
+    }
+  )
+  .delete(
+    '/:roomId/messages/:messageId',
+    zValidator('param', roomMessageParamSchema),
+    async c => {
+      const { roomId, messageId } = c.req.valid('param');
+      const session = c.get('session');
+
+      await deleteMessageHandler({
+        userId: session.userId,
+        roomId,
+        messageId,
+      });
+
+      return c.json({
+        success: true,
+        message: 'your message is deleted',
       });
     }
   );

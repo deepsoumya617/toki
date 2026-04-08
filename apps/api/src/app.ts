@@ -31,7 +31,7 @@ app.use(prettyJSON());
 export const apiRoutes = app
   .basePath('/api')
   // general route for health check
-  .get('/', c => {
+  .get('/health', c => {
     return c.json({
       status: 'ok',
       message: 'API is running',

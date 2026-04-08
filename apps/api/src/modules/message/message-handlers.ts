@@ -30,6 +30,10 @@ interface UpdateMessageType extends BaseMessageInputType {
   content: string;
 }
 
+interface DeleteMessageType extends BaseMessageInputType {
+  messageId: string;
+}
+
 export async function createMessageHandler({
   userId,
   roomId,
@@ -124,8 +128,8 @@ export async function getMessageHandler({
   const nextCursor =
     hasNextPage && lastMessage
       ? {
-          created_at: lastMessage.created_at,
           id: lastMessage.id,
+          createdAt: lastMessage.created_at,
         }
       : null;
 
@@ -189,4 +193,65 @@ export async function updateMessageHandler({
   if (!editedMessage) throw new Error('Failed to update message');
 
   return editedMessage;
+}
+
+export async function deleteMessageHandler({
+  userId,
+  roomId,
+  messageId,
+}: DeleteMessageType) {
+  const [room] = await db
+    .select({ expires_at: rooms.expires_at })
+    .from(roomMembers)
+    .innerJoin(rooms, eq(roomMembers.room_id, rooms.id))
+    .where(
+      and(eq(roomMembers.room_id, roomId), eq(roomMembers.user_id, userId))
+    );
+
+  if (!room)
+    throw new ForbiddenError(
+      'Room does not exist or you are not a member of this room'
+    );
+
+  if (room.expires_at && new Date().toISOString() > room.expires_at)
+    throw new GoneError();
+
+  // validate message
+  const [message] = await db
+    .select()
+    .from(messages)
+    .where(and(eq(messages.id, messageId), eq(messages.room_id, roomId)));
+
+  // edge cases
+  // -> message not found
+  if (!message) throw new NotFoundError('Message not found');
+
+  // -> system message
+  if (message.type === 'system')
+    throw new ForbiddenError('System messages can not be deleted');
+
+  // -> not owner
+  if (message.user_id && message.user_id !== userId)
+    throw new UnauthorizedError(
+      'You can not delete a message that is not yours'
+    );
+
+  // -> deleted
+  if (message.deleted_at)
+    throw new ForbiddenError('Can not delete a deleted message');
+
+  const [deletedMessage] = await db
+    .update(messages)
+    .set({
+      deleted_at: new Date().toISOString(),
+    })
+    .where(eq(messages.id, message.id))
+    .returning({
+      deleted_at: messages.deleted_at,
+    });
+
+  if (!deletedMessage || !deletedMessage.deleted_at)
+    throw new Error('Failed to delete message');
+
+  return;
 }
