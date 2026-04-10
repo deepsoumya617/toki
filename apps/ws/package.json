@@ -1,0 +1,21 @@
+{
+  "name": "ws",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "module": "src/index.ts",
+  "scripts": {
+    "dev": "bun run --hot src/index.ts"
+  },
+  "dependencies": {
+    "@xd/db": "*",
+    "@xd/env": "*",
+    "@xd/shared": "*"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@xd/eslint-config": "*",
+    "@xd/typescript-config": "*",
+    "typescript": "^5"
+  }
+}

@@ -75,6 +75,21 @@
         "typescript": "^5",
       },
     },
+    "apps/ws": {
+      "name": "ws",
+      "version": "0.1.0",
+      "dependencies": {
+        "@xd/db": "*",
+        "@xd/env": "*",
+        "@xd/shared": "*",
+      },
+      "devDependencies": {
+        "@types/bun": "latest",
+        "@xd/eslint-config": "*",
+        "@xd/typescript-config": "*",
+        "typescript": "^5",
+      },
+    },
     "packages/db": {
       "name": "@xd/db",
       "version": "0.0.0",
@@ -1564,6 +1579,8 @@
     "wrap-ansi": ["wrap-ansi@6.2.0", "", { "dependencies": { "ansi-styles": "^4.0.0", "string-width": "^4.1.0", "strip-ansi": "^6.0.0" } }, "sha512-r6lPcBGxZXlIcymEu7InxDMhdW0KDxpLgoFLcguasxCaJ/SOIZwINatK9KY/tf+ZrlywOKU0UDj3ATXUBfxJXA=="],
 
     "wrappy": ["wrappy@1.0.2", "", {}, "sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ=="],
+
+    "ws": ["ws@workspace:apps/ws"],
 
     "wsl-utils": ["wsl-utils@0.3.1", "", { "dependencies": { "is-wsl": "^3.1.0", "powershell-utils": "^0.1.0" } }, "sha512-g/eziiSUNBSsdDJtCLB8bdYEUMj4jR7AGeUo96p/3dTafgjHhpF4RiCFPiRILwjQoDXx5MqkBr4fwWtR3Ky4Wg=="],
 

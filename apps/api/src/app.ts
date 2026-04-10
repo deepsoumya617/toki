@@ -31,14 +31,14 @@ app.use(prettyJSON());
 export const apiRoutes = app
   .basePath('/api')
   // general route for health check
-  .get('/health', c => {
-    return c.json({
+  .get('/health', c =>
+    c.json({
       status: 'ok',
       message: 'API is running',
       timestamp: new Date().toISOString(),
       uptime: process.uptime(),
-    });
-  })
+    })
+  )
   // rest of the routes
   .route('/auth', authRoutes)
   .route('/rooms', roomRoutes)
