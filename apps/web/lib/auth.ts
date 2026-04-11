@@ -3,7 +3,7 @@ import type { SessionPayload } from '@xd/shared';
 import { webEnv } from '@xd/env/web';
 
 export interface SessionResponse {
-  session: SessionPayload<string> | null;
+  session: SessionPayload | null;
   user: PublicUser | null;
 }
 

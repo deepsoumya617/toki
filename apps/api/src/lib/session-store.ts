@@ -1,6 +1,7 @@
 // session store
 
 import {
+  getSessionFromRedis,
   REDIS_SESSION_PREFIX,
   REDIS_SESSION_TTL_SECONDS,
   SESSION_EXPIRY_SECONDS,
@@ -9,7 +10,7 @@ import {
 } from '@xd/shared';
 import { sessions } from '@xd/db/schema/sessions';
 import { UnauthorizedError } from './errors';
-import { and, eq, gt } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { redis } from './redis';
 import { db } from '@xd/db';
 
@@ -22,7 +23,9 @@ export async function createSession(userId: string): Promise<string> {
   crypto.getRandomValues(tokenBytes);
   const token = Buffer.from(tokenBytes).toString('base64url');
 
-  const expiresAt = new Date(Date.now() + SESSION_EXPIRY_SECONDS * 1000);
+  const expiresAt = new Date(
+    Date.now() + SESSION_EXPIRY_SECONDS * 1000
+  ).toISOString();
 
   const [session] = await db
     .insert(sessions)
@@ -58,37 +61,19 @@ export async function createSession(userId: string): Promise<string> {
 export async function getSession(token: string): Promise<SessionPayload> {
   const redisKey = `${REDIS_SESSION_PREFIX}${token}`;
 
-  const session = await redis.get(redisKey);
+  const session = await getSessionFromRedis({ redis, redisKey });
 
-  // cached
-  if (session) {
-    console.log('session cache hit');
+  if (session) return session;
 
-    const sessionData: SessionPayload<string> = JSON.parse(session);
-    const expiresAt = new Date(sessionData.expiresAt); // string -> Date
-
-    if (Date.now() > expiresAt.getTime()) {
-      await deleteSession(token);
-      throw new UnauthorizedError('Session expired');
-    }
-
-    return {
-      sessionId: sessionData.sessionId,
-      userId: sessionData.userId,
-      expiresAt,
-    };
-  }
-
-  // not cached, check db
-  console.log('session cache miss');
-
+  // not in redis
   const [dbSession] = await db
     .select()
     .from(sessions)
-    .where(and(eq(sessions.token, token), gt(sessions.expires_at, new Date())));
+    .where(eq(sessions.token, token));
 
-  if (!dbSession) {
-    // not in redis, so dont delete from redis
+  if (!dbSession) throw new UnauthorizedError('Invalid session');
+
+  if (dbSession.expires_at <= new Date().toISOString()) {
     await deleteSession(token, { skipRedis: true });
     throw new UnauthorizedError('Session expired');
   }

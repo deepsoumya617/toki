@@ -11,6 +11,7 @@ export const sessions = pgTable(
     token: varchar('token', { length: 255 }).notNull().unique(),
     expires_at: timestamp('expires_at', {
       withTimezone: true,
+      mode: 'string',
     }).notNull(),
   },
   // indexes keyword = WHERE, ORDER BY, JOIN etc

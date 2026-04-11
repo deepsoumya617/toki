@@ -1,5 +1,5 @@
-export interface SessionPayload<TExpiresAt = Date> {
+export interface SessionPayload {
   sessionId: string;
   userId: string;
-  expiresAt: TExpiresAt;
+  expiresAt: string;
 }
