@@ -3,6 +3,9 @@ import { RedisClient } from 'bun';
 
 export const redis = new RedisClient(wsEnv.REDIS_URL);
 
+// duplicate the redis client for subscribe
+export const subscriber = await redis.duplicate();
+
 // connection events
 redis.onconnect = () => {
   console.log('Connected to Redis');

@@ -3,12 +3,21 @@ import {
   REDIS_SESSION_PREFIX,
   SESSION_COOKIE_NAME,
 } from '@xd/shared';
-import type { WsData } from './types';
-import { redis } from './lib/redis';
+import type { ClientMessage, ServerMessage, WsData } from './types';
+import { roomMembers } from '@xd/db/schema/room-members';
+import { redis, subscriber } from './lib/redis';
+import type { ServerWebSocket } from 'bun';
+import { and, eq } from 'drizzle-orm';
 import { wsEnv } from '@xd/env/ws';
+import { db } from '@xd/db';
 
 // connect to redis
 await redis.connect();
+
+// send typed message
+function send(ws: ServerWebSocket<WsData>, msg: ServerMessage) {
+  ws.send(JSON.stringify(msg));
+}
 
 // bootstrap ws server
 const server = Bun.serve<WsData>({
@@ -54,14 +63,63 @@ const server = Bun.serve<WsData>({
     open(ws) {
       console.log('client connected: ', ws.data.userId);
     },
-    message(ws, message) {
-      ws.send('wassup nigga');
-      console.log(`Message from ${ws.data.userId}: `, message);
+    async message(ws, raw) {
+      let parsed: ClientMessage;
+
+      try {
+        parsed = JSON.parse(raw as string) as ClientMessage;
+      } catch {
+        send(ws, { type: 'error', payload: 'Invalid message format' });
+        return;
+      }
+
+      if (parsed.type === 'subscribe') {
+        const { roomId } = parsed.payload;
+
+        // check membership
+        const [member] = await db
+          .select({ id: roomMembers.id })
+          .from(roomMembers)
+          .where(
+            and(
+              eq(roomMembers.room_id, roomId),
+              eq(roomMembers.user_id, ws.data.userId)
+            )
+          );
+
+        if (!member) {
+          send(ws, { type: 'error', payload: 'Not a member of this room' });
+          return;
+        }
+
+        // subscribe to rooms ServerWebSocket
+        ws.subscribe(`room:${roomId}`);
+        send(ws, { type: 'subscribed', payload: { roomId } });
+        console.log(`${ws.data.userId} subscribed to room:${roomId}`);
+      }
+
+      if (parsed.type === 'unsubscribe') {
+        const { roomId } = parsed.payload;
+
+        // unsubscribe from socket
+        ws.unsubscribe(`room:${roomId}`);
+        send(ws, { type: 'unsubscribed', payload: { roomId } });
+      }
+
+      if (parsed.type === 'ping') {
+        send(ws, { type: 'pong', payload: null });
+      }
     },
     close(ws) {
       console.log('client disconnected');
     },
   },
+});
+
+// subscribe to message channel
+await subscriber.subscribe('messages', raw => {
+  const data = JSON.parse(raw);
+  server.publish(`room:${data.roomId}`, raw);
 });
 
 console.log(`WS server running on ws://localhost:${server.port}`);
