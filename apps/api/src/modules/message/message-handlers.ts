@@ -9,6 +9,7 @@ import type { Cursor } from '../room/room-handlers';
 import { and, desc, eq, lt, or } from 'drizzle-orm';
 import { messages } from '@xd/db/schema/messages';
 import { rooms } from '@xd/db/schema/rooms';
+import { redis } from '../../lib/redis';
 import { db } from '@xd/db';
 
 interface BaseMessageInputType {
@@ -64,13 +65,22 @@ export async function createMessageHandler({
       room_id: roomId,
       user_id: userId,
     })
-    .returning({
-      id: messages.id,
-      content: messages.content,
-      created_at: messages.created_at,
-    });
+    .returning();
 
   if (!message) throw new Error('Failed to create message.');
+
+  // publish the new message to redis
+  await redis.publish(
+    'messages',
+    JSON.stringify({
+      roomId,
+      id: message.id,
+      content: message.content,
+      userId: message.user_id,
+      createdAt: message.created_at,
+      type: message.type,
+    })
+  );
 
   return message;
 }

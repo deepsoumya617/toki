@@ -3,7 +3,12 @@ import {
   REDIS_SESSION_PREFIX,
   SESSION_COOKIE_NAME,
 } from '@xd/shared';
-import type { ClientMessage, ServerMessage, WsData } from './types';
+import type {
+  ClientMessage,
+  RoomMessageEvent,
+  ServerMessage,
+  WsData,
+} from './types';
 import { roomMembers } from '@xd/db/schema/room-members';
 import { redis, subscriber } from './lib/redis';
 import type { ServerWebSocket } from 'bun';
@@ -118,8 +123,14 @@ const server = Bun.serve<WsData>({
 
 // subscribe to message channel
 await subscriber.subscribe('messages', raw => {
-  const data = JSON.parse(raw);
-  server.publish(`room:${data.roomId}`, raw);
+  const data = JSON.parse(raw) as RoomMessageEvent;
+
+  const serverMsg: ServerMessage = {
+    type: 'new_message',
+    payload: data,
+  };
+
+  server.publish(`room:${data.roomId}`, JSON.stringify(serverMsg));
 });
 
 console.log(`WS server running on ws://localhost:${server.port}`);

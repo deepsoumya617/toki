@@ -1,5 +1,17 @@
+import type { messageTypeEnum } from '@xd/db/schema/messages';
+
 export interface WsData {
   userId: string;
+}
+
+// room message event
+export interface RoomMessageEvent {
+  roomId: string;
+  id: string;
+  content: string;
+  userId: string;
+  createdAt: string;
+  type: (typeof messageTypeEnum.enumValues)[number];
 }
 
 // message types
@@ -15,4 +27,4 @@ export type ServerMessage =
   | { type: 'unsubscribed'; payload: { roomId: string } }
   | { type: 'pong'; payload: null }
   | { type: 'error'; payload: string }
-  | { type: 'new_message'; payload: unknown };
+  | { type: 'new_message'; payload: RoomMessageEvent };
