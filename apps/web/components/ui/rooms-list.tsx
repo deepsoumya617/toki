@@ -1,25 +1,10 @@
 'use client';
 
-import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuGroup,
-  ContextMenuItem,
-  ContextMenuSeparator,
-  ContextMenuTrigger,
-} from './context-menu';
-import {
-  Edit02Icon,
-  Logout01Icon,
-  Share03Icon,
-} from '@hugeicons/core-free-icons';
 import { Tooltip, TooltipContent, TooltipTrigger } from './tooltip';
 import { useInView } from 'react-intersection-observer';
 import { useRoomsAll } from '@/hooks/use-rooms-all';
-import { HugeiconsIcon } from '@hugeicons/react';
 import { useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
 
 function formatDate(value: string | null) {
   if (!value) return 'Never';
@@ -69,14 +54,6 @@ function formatExpiresAt(value: string | null): {
   const target = new Date(value).getTime();
   if (target < Date.now()) return { label: 'Expired', expired: true };
   return { label: formatRelativeTime(value), expired: false };
-}
-
-function copyInviteLink(roomId: string) {
-  const link = `${window.location.origin}/dashboard/rooms/join?roomId=${roomId}`;
-  navigator.clipboard
-    .writeText(link)
-    .then(() => toast.success('Invite link copied!'))
-    .catch(() => toast.error('Failed to copy invite link'));
 }
 
 const COLS = 'grid-cols-[minmax(0,14rem)_2.75rem_5.5rem_5.5rem]';
@@ -181,111 +158,69 @@ export function RoomsList() {
             const expires = formatExpiresAt(room.expires_at);
 
             return (
-              <ContextMenu key={room.id}>
-                <ContextMenuTrigger>
-                  <div className="px-4 transition-colors hover:bg-stone-50">
-                    <div className="flex items-center gap-3 py-3 sm:hidden">
-                      <RoleDot isOwner={room.isOwner} />
-                      <div className="min-w-0">
-                        <p
-                          className="truncate text-sm font-medium text-stone-900"
-                          title={room.name}
-                        >
-                          {room.name}
-                        </p>
-                        <p className="mt-0.5 text-xs text-stone-600">
-                          {room.membersCount} member
-                          {room.membersCount !== 1 ? 's' : ''}
-                          {' · '}
-                          {formatCreatedAt(room.created_at)}
-                          {' · '}
-                          <span
-                            className={expires.expired ? 'text-red-500' : ''}
-                          >
-                            {expires.label}
-                          </span>
-                        </p>
-                      </div>
-                    </div>
-
-                    <div
-                      className={cn(
-                        'hidden sm:grid items-center py-3',
-                        COLS,
-                        GAP
-                      )}
+              <div
+                key={room.id}
+                className="px-4 transition-colors hover:bg-stone-50"
+              >
+                <div className="flex items-center gap-3 py-3 sm:hidden">
+                  <RoleDot isOwner={room.isOwner} />
+                  <div className="min-w-0">
+                    <p
+                      className="truncate text-sm font-medium text-stone-900"
+                      title={room.name}
                     >
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <RoleDot isOwner={room.isOwner} />
-                        <p
-                          className="truncate text-sm font-medium text-stone-900"
-                          title={room.name}
-                        >
-                          {room.name}
-                        </p>
-                      </div>
-
-                      <p className="text-right text-xs tabular-nums text-stone-600 font-medium">
-                        {room.membersCount}
-                      </p>
-
-                      <p
-                        className="text-center text-xs tabular-nums text-stone-600 font-medium"
-                        title={formatDate(room.created_at)}
-                      >
-                        {formatCreatedAt(room.created_at)}
-                      </p>
-
-                      <p
-                        className={cn(
-                          'text-center text-xs font-medium',
-                          expires.expired ? 'text-red-500' : 'text-stone-600'
-                        )}
-                        title={
-                          room.expires_at
-                            ? formatDate(room.expires_at)
-                            : 'Never'
-                        }
-                      >
+                      {room.name}
+                    </p>
+                    <p className="mt-0.5 text-xs text-stone-600">
+                      {room.membersCount} member
+                      {room.membersCount !== 1 ? 's' : ''}
+                      {' · '}
+                      {formatCreatedAt(room.created_at)}
+                      {' · '}
+                      <span className={expires.expired ? 'text-red-500' : ''}>
                         {expires.label}
-                      </p>
-                    </div>
+                      </span>
+                    </p>
                   </div>
-                </ContextMenuTrigger>
-                <ContextMenuContent className="w-60 border-0 bg-transparent p-0 shadow-none ring-0">
-                  <div className="relative mx-4 my-3 border border-stone-200 bg-white shadow-xs p-1">
-                    <ContextMenuGroup>
-                      <ContextMenuItem onClick={() => copyInviteLink(room.id)}>
-                        <HugeiconsIcon icon={Share03Icon} strokeWidth={1.8} />
-                        Invite link
-                      </ContextMenuItem>
+                </div>
 
-                      <ContextMenuItem
-                        onClick={() =>
-                          toast.info('Update room action will be added soon')
-                        }
-                      >
-                        <HugeiconsIcon icon={Edit02Icon} strokeWidth={1.8} />
-                        Update room
-                      </ContextMenuItem>
-                    </ContextMenuGroup>
-
-                    <ContextMenuSeparator />
-
-                    <ContextMenuGroup>
-                      <ContextMenuItem
-                        variant="destructive"
-                        onClick={() =>
-                          toast.info('Leave room action will be added soon')
-                        }
-                      >
-                        <HugeiconsIcon icon={Logout01Icon} strokeWidth={1.8} />
-                        Leave room
-                      </ContextMenuItem>
-                    </ContextMenuGroup>
+                <div
+                  className={cn('hidden sm:grid items-center py-3', COLS, GAP)}
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <RoleDot isOwner={room.isOwner} />
+                    <p
+                      className="truncate text-sm font-medium text-stone-900"
+                      title={room.name}
+                    >
+                      {room.name}
+                    </p>
                   </div>
-                </ContextMenuContent>
-              </ContextMenu>
+
+                  <p className="text-right text-xs tabular-nums text-stone-600 font-medium">
+                    {room.membersCount}
+                  </p>
+
+                  <p
+                    className="text-center text-xs tabular-nums text-stone-600 font-medium"
+                    title={formatDate(room.created_at)}
+                  >
+                    {formatCreatedAt(room.created_at)}
+                  </p>
+
+                  <p
+                    className={cn(
+                      'text-center text-xs font-medium',
+                      expires.expired ? 'text-red-500' : 'text-stone-600'
+                    )}
+                    title={
+                      room.expires_at ? formatDate(room.expires_at) : 'Never'
+                    }
+                  >
+                    {expires.label}
+                  </p>
+                </div>
+              </div>
             );
           })
         ) : (

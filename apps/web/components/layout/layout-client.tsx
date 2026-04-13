@@ -9,7 +9,6 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 import { LogoutButton } from '@/components/auth/logout-button';
 import { CreateRoomModal } from '../ui/create-room-modal';
 import { usePathname, useRouter } from 'next/navigation';
-import JoinRoomModal from '../ui/join-room-modal';
 import { useSession } from '@/hooks/use-session';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { useRooms } from '@/hooks/use-rooms';
@@ -111,10 +110,6 @@ export default function ProtectedLayoutClient({
       <CreateRoomModal
         isOpen={isCreateRoomModalOpen}
         onClose={() => setIsCreateRoomModalOpen(false)}
-      />
-      <JoinRoomModal
-        isOpen={isJoinRoomModalOpen}
-        onClose={() => setIsJoinRoomModalOpen}
       />
       <DmModal
         isOpen={isDmModalOpen}
