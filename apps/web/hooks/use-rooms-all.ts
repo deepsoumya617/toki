@@ -17,6 +17,7 @@ export function useRoomsAll() {
     getNextPageParam: lastPage => lastPage.nextCursor ?? undefined,
     select: data => ({
       rooms: data.pages.flatMap(page => page.allRooms),
+      totalRooms: data.pages[0]?.totalRooms ?? 0,
       pageParams: data.pageParams,
     }),
   });

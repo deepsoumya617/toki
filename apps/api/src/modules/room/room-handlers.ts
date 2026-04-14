@@ -9,9 +9,9 @@ import type {
   RoomExpiryOption,
   UpdateRoomInput,
 } from '@xd/shared';
+import { and, count, desc, eq, gt, isNull, lt, or } from 'drizzle-orm';
 import { rooms, type PublicRoom } from '@xd/db/schema/rooms';
 import { roomMembers } from '@xd/db/schema/room-members';
-import { and, desc, eq, lt, or } from 'drizzle-orm';
 import { db } from '@xd/db';
 
 export interface Cursor {
@@ -134,6 +134,14 @@ export async function getRoomsHandler(
   // prepare the conditions array
   const conditions = [eq(roomMembers.user_id, userId)];
 
+  // filter expired rooms
+  conditions.push(
+    or(
+      isNull(rooms.expires_at),
+      gt(rooms.expires_at, new Date().toISOString())
+    )!
+  );
+
   if (cursor) {
     conditions.push(
       or(
@@ -149,6 +157,7 @@ export async function getRoomsHandler(
     );
   }
 
+  // paginated query
   const res = await db
     .select({
       id: rooms.id,
@@ -164,6 +173,23 @@ export async function getRoomsHandler(
     .orderBy(desc(rooms.created_at), desc(rooms.id))
     .limit(limit + 1);
 
+  // count the total rooms -> all rooms page
+  const rows = await db
+    .select({ count: count() })
+    .from(roomMembers)
+    .innerJoin(rooms, eq(roomMembers.room_id, rooms.id))
+    .where(
+      and(
+        eq(roomMembers.user_id, userId),
+        or(
+          isNull(rooms.expires_at),
+          gt(rooms.expires_at, new Date().toISOString())
+        )
+      )
+    );
+
+  const totalRooms = rows[0]?.count ?? 0;
+
   // limit = 10 -> i asked for 11 -> fetched 11 -> next page exists
   const hasNextPage = res.length > limit;
   const roomsData = hasNextPage ? res.slice(0, limit) : res;
@@ -178,7 +204,7 @@ export async function getRoomsHandler(
         }
       : null;
 
-  return { allRooms: roomsData, nextCursor, hasNextPage };
+  return { allRooms: roomsData, totalRooms, nextCursor, hasNextPage };
 }
 
 // get all rooms for a member -> for sidebar
