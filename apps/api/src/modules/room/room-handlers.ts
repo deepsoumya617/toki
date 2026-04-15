@@ -38,6 +38,11 @@ function getExpiresAt(expiresIn: RoomExpiryOption): string | null {
   return new Date(Date.now() + durationMs).toISOString();
 }
 
+// helper function to check room expiry
+function notExpiredRoomCondition(nowIso: string) {
+  return or(isNull(rooms.expires_at), gt(rooms.expires_at, nowIso))!;
+}
+
 // handle create room logic
 export async function createRoomHandler(
   input: CreateRoomInput,
@@ -135,12 +140,7 @@ export async function getRoomsHandler(
   const conditions = [eq(roomMembers.user_id, userId)];
 
   // filter expired rooms
-  conditions.push(
-    or(
-      isNull(rooms.expires_at),
-      gt(rooms.expires_at, new Date().toISOString())
-    )!
-  );
+  conditions.push(notExpiredRoomCondition(new Date().toISOString()));
 
   if (cursor) {
     conditions.push(
@@ -181,10 +181,7 @@ export async function getRoomsHandler(
     .where(
       and(
         eq(roomMembers.user_id, userId),
-        or(
-          isNull(rooms.expires_at),
-          gt(rooms.expires_at, new Date().toISOString())
-        )
+        notExpiredRoomCondition(new Date().toISOString())
       )
     );
 
@@ -216,7 +213,12 @@ export async function getSidebarRoomsHandler(userId: string) {
     })
     .from(roomMembers)
     .innerJoin(rooms, eq(roomMembers.room_id, rooms.id))
-    .where(eq(roomMembers.user_id, userId))
+    .where(
+      and(
+        eq(roomMembers.user_id, userId),
+        notExpiredRoomCondition(new Date().toISOString())
+      )
+    )
     .orderBy(desc(rooms.created_at))
     .limit(5);
 
@@ -235,7 +237,13 @@ export async function getRoomByIdHandler(roomId: string, userId: string) {
     })
     .from(roomMembers)
     .innerJoin(rooms, eq(roomMembers.room_id, rooms.id))
-    .where(and(eq(roomMembers.user_id, userId), eq(rooms.id, roomId)));
+    .where(
+      and(
+        eq(roomMembers.user_id, userId),
+        eq(rooms.id, roomId),
+        notExpiredRoomCondition(new Date().toISOString())
+      )
+    );
 
   if (!room) throw new NotFoundError('Room not found');
 
