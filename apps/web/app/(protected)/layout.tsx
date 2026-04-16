@@ -5,10 +5,11 @@ import {
 } from '@tanstack/react-query';
 import ProtectedLayoutClient from '@/components/layout/layout-client';
 import { ROOMS_QUERY_KEY, SESSION_QUERY_KEY } from '@xd/shared';
-import auth, { type SessionResponse } from '@/lib/auth';
+import type { SessionResponse } from '@/types/auth';
 import { roomClient } from '@/lib/room-client';
 import { redirect } from 'next/navigation';
 import { headers } from 'next/headers';
+import auth from '@/lib/auth';
 
 export default async function ProtectedLayout({
   children,

@@ -1,10 +1,4 @@
-interface ApiErrorResponse {
-  success?: boolean;
-  error?: {
-    code?: string;
-    message?: string;
-  };
-}
+import type { ApiErrorResponse } from '@/types/api';
 
 export async function parseApiError(
   response: Response,

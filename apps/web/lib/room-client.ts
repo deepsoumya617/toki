@@ -61,4 +61,15 @@ export const roomClient = {
 
     return await res.json();
   },
+
+  // leave room
+  leaveRoom: async (roomId: string) => {
+    const res = await client.api.rooms[':roomId'].leave.$post({
+      param: { roomId },
+    });
+
+    if (!res.ok) throw await parseApiError(res, 'Failed to leave room');
+
+    return await res.json();
+  },
 };

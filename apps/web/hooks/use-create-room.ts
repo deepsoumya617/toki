@@ -5,34 +5,14 @@ import {
   useQueryClient,
   type InfiniteData,
 } from '@tanstack/react-query';
-import type { Cursor } from '@apps/api/src/modules/room/room-handlers';
+import type {
+  Room,
+  SidebarRoom,
+  SidebarRoomsCache,
+  RoomsPage,
+} from '@/types/room';
 import { roomClient } from '@/lib/room-client';
 import { ROOMS_QUERY_KEY } from '@xd/shared';
-
-interface Room {
-  id: string;
-  name: string;
-  membersCount: number;
-  createdAt: string;
-  expiresAt: string | null;
-  isOwner: boolean;
-}
-
-interface SidebarRoom {
-  id: string;
-  name: string;
-}
-
-interface SidebarRoomsCache {
-  success: boolean;
-  rooms: SidebarRoom[];
-}
-
-interface RoomsPage {
-  allRooms: Room[];
-  nextCursor: Cursor | null;
-  hasNextPage: boolean;
-}
 
 // optimistic update -> update the cache before the mutation is successful
 export default function useCreateRoom() {

@@ -1,11 +1,7 @@
-import type { PublicUser } from '@xd/db/schema/users';
-import type { SessionPayload } from '@xd/shared';
+import type { SessionResponse } from '@/types/auth';
 import { webEnv } from '@xd/env/web';
 
-export interface SessionResponse {
-  session: SessionPayload | null;
-  user: PublicUser | null;
-}
+export type { SessionResponse };
 
 interface SessionApiResponse {
   success: boolean;

@@ -1,5 +1,5 @@
 import type { SignInInput, SignUpInput } from '@xd/shared';
-import type { SessionResponse } from './auth';
+import type { SessionResponse } from '@/types/auth';
 import { parseApiError } from './api-error';
 import { client } from './client';
 
