@@ -47,8 +47,8 @@ export default function useCreateRoom() {
         name: fakeSidebarRoom.name,
         membersCount: 1,
         isOwner: true,
-        createdAt: new Date().toISOString(),
-        expiresAt: input.expiresIn,
+        created_at: new Date().toISOString(),
+        expires_at: input.expiresIn,
       };
 
       queryClient.setQueryData<SidebarRoomsCache>(
@@ -92,9 +92,9 @@ export default function useCreateRoom() {
         id: data.data.id,
         name: data.data.name,
         isOwner: true,
-        createdAt: data.data.created_at,
+        created_at: data.data.created_at,
         membersCount: 1,
-        expiresAt: data.data.expires_at,
+        expires_at: data.data.expires_at,
       };
 
       // sidebar cache

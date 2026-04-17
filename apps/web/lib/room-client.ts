@@ -53,7 +53,13 @@ export const roomClient = {
   },
 
   // join room
-  joinRoom: async (roomId: string, input: JoinRoomInput) => {
+  joinRoom: async ({
+    roomId,
+    input,
+  }: {
+    roomId: string;
+    input: JoinRoomInput;
+  }) => {
     const res = await client.api.rooms[':roomId'].join.$post({
       param: {
         roomId,
@@ -78,7 +84,13 @@ export const roomClient = {
   },
 
   // update room
-  updateRoom: async (roomId: string, input: UpdateRoomInput) => {
+  updateRoom: async ({
+    roomId,
+    input,
+  }: {
+    roomId: string;
+    input: UpdateRoomInput;
+  }) => {
     const res = await client.api.rooms[':roomId'].update.$post({
       param: { roomId },
       json: input,

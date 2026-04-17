@@ -4,8 +4,8 @@ export interface Room {
   id: string;
   name: string;
   membersCount: number;
-  createdAt: string;
-  expiresAt: string | null;
+  created_at: string;
+  expires_at: string | null;
   isOwner: boolean;
 }
 
@@ -21,6 +21,7 @@ export interface SidebarRoomsCache {
 
 export interface RoomsPage {
   allRooms: Room[];
+  totalRooms: number;
   nextCursor: Cursor | null;
   hasNextPage: boolean;
 }
