@@ -1,5 +1,9 @@
+import type {
+  CreateRoomInput,
+  JoinRoomInput,
+  UpdateRoomInput,
+} from '@xd/shared';
 import type { Cursor } from '@apps/api/src/modules/room/room-handlers';
-import type { CreateRoomInput, JoinRoomInput } from '@xd/shared';
 import { parseApiError } from './api-error';
 import { client } from './client';
 
@@ -69,6 +73,18 @@ export const roomClient = {
     });
 
     if (!res.ok) throw await parseApiError(res, 'Failed to leave room');
+
+    return await res.json();
+  },
+
+  // update room
+  updateRoom: async (roomId: string, input: UpdateRoomInput) => {
+    const res = await client.api.rooms[':roomId'].update.$post({
+      param: { roomId },
+      json: input,
+    });
+
+    if (!res.ok) throw await parseApiError(res, 'Failed to update room');
 
     return await res.json();
   },
