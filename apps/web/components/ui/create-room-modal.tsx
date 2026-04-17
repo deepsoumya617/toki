@@ -14,6 +14,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import useCreateRoom from '@/hooks/use-create-room';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { useForm } from 'react-hook-form';
+import { Label } from './label';
 import { toast } from 'sonner';
 import { Kbd } from './kbd';
 
@@ -77,7 +78,7 @@ export function CreateRoomModal({ isOpen, onClose }: CreateRoomModalProps) {
 
         <div className="border-b border-stone-200 px-3 py-2 sm:px-4 sm:py-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm sm:text-base font-medium text-stone-900">
+            <h2 className="text-sm sm:text-base font-semibold tracking-tight text-stone-900">
               Create Room
             </h2>
             <Kbd className="font-mono">esc</Kbd>
@@ -89,6 +90,21 @@ export function CreateRoomModal({ isOpen, onClose }: CreateRoomModalProps) {
           onSubmit={handleSubmit(onSubmit)}
         >
           <div>
+            <div className="mb-1 flex items-center gap-0.5">
+              <Label
+                htmlFor="room-name"
+                className="text-xs font-medium text-stone-700"
+              >
+                Name
+              </Label>
+              <span
+                aria-hidden="true"
+                className="text-xs leading-none text-red-600"
+                title="Required"
+              >
+                *
+              </span>
+            </div>
             <div className="relative">
               <HugeiconsIcon
                 icon={UserGroupIcon}
@@ -96,8 +112,9 @@ export function CreateRoomModal({ isOpen, onClose }: CreateRoomModalProps) {
                 className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-stone-500"
               />
               <input
+                id="room-name"
                 type="text"
-                placeholder="Room name"
+                placeholder="e.g. lockin"
                 {...register('name')}
                 className="h-10 w-full rounded-none border border-stone-200 bg-stone-100 pr-3 pl-9 text-xs text-stone-900 outline-none transition focus:border-stone-300 focus:bg-white"
                 autoFocus
@@ -111,6 +128,21 @@ export function CreateRoomModal({ isOpen, onClose }: CreateRoomModalProps) {
           </div>
 
           <div>
+            <div className="mb-1 flex items-center gap-0.5">
+              <Label
+                htmlFor="room-password"
+                className="text-xs font-medium text-stone-700"
+              >
+                Password
+              </Label>
+              <span
+                aria-hidden="true"
+                className="text-xs leading-none text-red-600"
+                title="Required"
+              >
+                *
+              </span>
+            </div>
             <div className="relative">
               <HugeiconsIcon
                 icon={LockPasswordIcon}
@@ -118,8 +150,9 @@ export function CreateRoomModal({ isOpen, onClose }: CreateRoomModalProps) {
                 className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-stone-500"
               />
               <input
+                id="room-password"
                 type="password"
-                placeholder="Room password"
+                placeholder="e.g. 234466"
                 {...register('password')}
                 className="h-10 w-full rounded-none border border-stone-200 bg-stone-100 pr-3 pl-9 text-xs text-stone-900 outline-none transition focus:border-stone-300 focus:bg-white"
               />
@@ -132,18 +165,10 @@ export function CreateRoomModal({ isOpen, onClose }: CreateRoomModalProps) {
           </div>
 
           <div>
+            <Label className="mb-1 block text-xs font-medium text-stone-700">
+              Expires in
+            </Label>
             <div className="rounded-none border border-stone-200 bg-linear-to-b from-stone-50 to-stone-100 p-2.5">
-              <div className="mb-2.5 flex items-center justify-between">
-                <div className="flex items-center gap-2 text-stone-700">
-                  <HugeiconsIcon
-                    icon={HourglassIcon}
-                    strokeWidth={1.8}
-                    className="size-4"
-                  />
-                  <p className="text-xs">Expires in</p>
-                </div>
-              </div>
-
               <input type="hidden" {...register('expiresIn')} />
 
               <div className="grid grid-cols-4 gap-1.5">
