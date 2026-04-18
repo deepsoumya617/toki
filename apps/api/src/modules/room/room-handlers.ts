@@ -306,17 +306,21 @@ export async function updateRoomHandler(
 
   // check if room expired -> for now
   // later will use a cron job to remove expired rooms
-  if (room.expires_at && new Date().toISOString() > room.expires_at)
+  // someone please slit my throat atp
+  if (room.expires_at !== null && new Date().toISOString() <= room.expires_at)
     throw new GoneError();
 
-  const updateData: UpdateRoomInput = {};
+  const updateData: Partial<typeof rooms.$inferInsert> = {};
 
   if (input.name !== undefined) updateData.name = input.name;
   if (input.password !== undefined)
     updateData.password = await Bun.password.hash(input.password, 'bcrypt');
-  if (input.expiresIn !== undefined) updateData.expiresIn = input.expiresIn;
+  if (input.expiresIn !== undefined)
+    updateData.expires_at = getExpiresAt(input.expiresIn);
 
   if (Object.keys(updateData).length === 0) return room;
+
+  // console.log(updateData)
 
   // update room
   const [updatedRoom] = await db

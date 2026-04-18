@@ -48,7 +48,7 @@ export default function useCreateRoom() {
         membersCount: 1,
         isOwner: true,
         created_at: new Date().toISOString(),
-        expires_at: input.expiresIn,
+        expires_at: null,
       };
 
       queryClient.setQueryData<SidebarRoomsCache>(

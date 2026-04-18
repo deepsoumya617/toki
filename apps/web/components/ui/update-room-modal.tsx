@@ -1,70 +1,95 @@
 'use client';
 
 import {
-  createRoomSchema,
   roomExpiryOptions,
-  type CreateRoomInput,
+  updateRoomSchema,
+  type UpdateRoomInput,
+  type RoomExpiryOption,
 } from '@xd/shared';
-import { UserGroupIcon, LockPasswordIcon } from '@hugeicons/core-free-icons';
-import { zodResolver } from '@hookform/resolvers/zod';
-import useCreateRoom from '@/hooks/use-create-room';
+import { LockPasswordIcon, UserGroupIcon } from '@hugeicons/core-free-icons';
+import useUpdateRoom from '@/hooks/use-update-room';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { useForm } from 'react-hook-form';
 import { Label } from './label';
 import { toast } from 'sonner';
 import { Kbd } from './kbd';
 
-interface CreateRoomModalProps {
+interface UpdateRoomModalProps {
+  roomId?: string;
   isOpen: boolean;
   onClose: () => void;
 }
 
-export function CreateRoomModal({ isOpen, onClose }: CreateRoomModalProps) {
+type FormValues = {
+  name: string;
+  password: string;
+  expiresIn: RoomExpiryOption | undefined;
+};
+
+export default function UpdateRoomModal({
+  roomId,
+  isOpen,
+  onClose,
+}: UpdateRoomModalProps) {
   const {
     register,
     handleSubmit,
     reset,
-    setValue, // -> writes new state
-    watch, // -> reads current state
+    setValue,
+    watch,
+    setError,
     formState: { errors },
-  } = useForm({
-    resolver: zodResolver(createRoomSchema),
-    mode: 'onBlur',
-    reValidateMode: 'onChange',
-    defaultValues: {
-      name: '',
-      password: '',
-      expiresIn: 'never',
-    },
+  } = useForm<FormValues>({
+    defaultValues: { name: '', password: '', expiresIn: undefined },
   });
 
-  const createRoomMutation = useCreateRoom();
-
+  const updateRoomMutation = useUpdateRoom();
   const selectedExpiry = watch('expiresIn');
 
-  // handle submit
-  function onSubmit(data: CreateRoomInput) {
-    createRoomMutation.mutate(data, {
-      onSuccess: () => {
-        toast.success('Room created successfully');
-        reset({
-          name: '',
-          password: '',
-          expiresIn: 'never',
-        });
-        onClose();
-      },
-      onError: error => {
-        toast.error(error.message || 'Failed to create room');
-      },
+  const onSubmit = (data: FormValues) => {
+    if (!roomId) return;
+
+    // works for now
+    const parsed = updateRoomSchema.safeParse({
+      name: data.name.trim() || undefined,
+      password: data.password.trim() || undefined,
+      expiresIn: data.expiresIn,
     });
-  }
+
+    if (!parsed.success) {
+      parsed.error.issues.forEach(issue => {
+        const field = issue.path[0] as keyof FormValues | undefined;
+        if (field) setError(field, { message: issue.message });
+        else setError('root', { message: issue.message });
+      });
+      return;
+    }
+
+    const input: UpdateRoomInput = parsed.data;
+
+    updateRoomMutation.mutate(
+      { roomId, input },
+      {
+        onSuccess: () => {
+          toast.success('Room Updated');
+          reset({ name: '', password: '', expiresIn: undefined });
+          onClose();
+        },
+        onError: error => {
+          toast.error(error.message || 'Failed to update room');
+        },
+      }
+    );
+  };
 
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
-      <div className="absolute inset-0 bg-black/40" aria-hidden="true" />
+      <div
+        className="absolute inset-0 bg-black/40 h-screen"
+        aria-hidden="true"
+      />
 
       <div className="relative z-10 w-full border border-stone-200 bg-white sm:w-88">
         <span className="absolute -top-1 -left-1 size-2 border border-stone-300 bg-white hidden sm:block" />
@@ -75,7 +100,7 @@ export function CreateRoomModal({ isOpen, onClose }: CreateRoomModalProps) {
         <div className="border-b border-stone-200 px-3 py-2 sm:px-4 sm:py-3">
           <div className="flex items-center justify-between">
             <h2 className="text-sm sm:text-base font-semibold tracking-tight text-stone-900">
-              Create Room
+              Update Room
             </h2>
             <Kbd className="font-mono">esc</Kbd>
           </div>
@@ -93,13 +118,6 @@ export function CreateRoomModal({ isOpen, onClose }: CreateRoomModalProps) {
               >
                 Name
               </Label>
-              <span
-                aria-hidden="true"
-                className="text-xs leading-none text-red-600"
-                title="Required"
-              >
-                *
-              </span>
             </div>
             <div className="relative">
               <HugeiconsIcon
@@ -117,9 +135,7 @@ export function CreateRoomModal({ isOpen, onClose }: CreateRoomModalProps) {
               />
             </div>
             {errors.name && (
-              <p className="mt-1 wrap-break-word text-xs text-red-600">
-                {errors.name.message}
-              </p>
+              <p className="mt-1 text-xs text-red-600">{errors.name.message}</p>
             )}
           </div>
 
@@ -131,13 +147,6 @@ export function CreateRoomModal({ isOpen, onClose }: CreateRoomModalProps) {
               >
                 Password
               </Label>
-              <span
-                aria-hidden="true"
-                className="text-xs leading-none text-red-600"
-                title="Required"
-              >
-                *
-              </span>
             </div>
             <div className="relative">
               <HugeiconsIcon
@@ -154,7 +163,7 @@ export function CreateRoomModal({ isOpen, onClose }: CreateRoomModalProps) {
               />
             </div>
             {errors.password && (
-              <p className="mt-1 wrap-break-word text-xs text-red-600">
+              <p className="mt-1 text-xs text-red-600">
                 {errors.password.message}
               </p>
             )}
@@ -165,23 +174,17 @@ export function CreateRoomModal({ isOpen, onClose }: CreateRoomModalProps) {
               Expires in
             </Label>
             <div className="rounded-none border border-stone-200 bg-linear-to-b from-stone-50 to-stone-100 p-2.5">
-              <input type="hidden" {...register('expiresIn')} />
-
               <div className="grid grid-cols-4 gap-1.5">
                 {roomExpiryOptions.map(option => {
                   const isSelected = selectedExpiry === option;
-
                   return (
                     <button
                       key={option}
                       type="button"
                       aria-pressed={isSelected}
-                      onClick={() => {
-                        setValue('expiresIn', option, {
-                          shouldDirty: true,
-                          shouldValidate: true,
-                        });
-                      }}
+                      onClick={() =>
+                        setValue('expiresIn', isSelected ? undefined : option)
+                      }
                       className={`py-3 border border-dashed px-1 text-xs leading-none transition cursor-pointer font-medium ${
                         isSelected
                           ? 'border-stone-950 bg-stone-300/50 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.14)]'
@@ -194,19 +197,18 @@ export function CreateRoomModal({ isOpen, onClose }: CreateRoomModalProps) {
                 })}
               </div>
             </div>
-            {errors.expiresIn && (
-              <p className="mt-1 wrap-break-word text-xs text-red-600">
-                {errors.expiresIn.message}
-              </p>
-            )}
           </div>
+
+          {errors.root && (
+            <p className="text-xs text-red-600">{errors.root.message}</p>
+          )}
 
           <button
             type="submit"
-            disabled={createRoomMutation.isPending}
-            className="cursor-pointer mt-2 w-full border border-stone-900 bg-stone-900 px-4 py-2  text-xs sm:text-sm text-white transition hover:bg-stone-800"
+            disabled={updateRoomMutation.isPending}
+            className="cursor-pointer mt-2 w-full border border-stone-900 bg-stone-900 px-4 py-2 text-xs sm:text-sm text-white transition hover:bg-stone-800"
           >
-            {createRoomMutation.isPending ? 'Creating Room...' : 'Create Room'}
+            {updateRoomMutation.isPending ? 'Updating Room...' : 'Update Room'}
           </button>
         </form>
       </div>
