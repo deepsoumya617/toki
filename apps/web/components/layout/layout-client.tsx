@@ -205,7 +205,7 @@ export default function ProtectedLayoutClient({
                       {rooms.map(room => (
                         <li key={room.id} className="py-0.5">
                           <a
-                            href={`/dashboard/rooms/${room.name.toLowerCase()}`}
+                            href={`/dashboard/rooms/${room.id}`}
                             className="block text-sm font-medium text-stone-700 hover:text-stone-900"
                           >
                             {room.name}

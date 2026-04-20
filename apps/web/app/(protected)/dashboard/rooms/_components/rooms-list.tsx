@@ -153,12 +153,10 @@ export function RoomsList({ selectedRoomId, onSelect }: RoomsListProps) {
   return (
     <>
       <div className="mt-4flex h-6 items-center">
-        {seletedRoomName && (
-          <p className="text-xs font-mono text-stone-400 tracking-wide">
-            <span className="text-stone-300 mr-1.5">/</span>
-            {seletedRoomName}
-          </p>
-        )}
+        <p className="text-xs font-mono text-stone-400 tracking-wide">
+          <span className="text-stone-300 mr-1.5">/</span>
+          {seletedRoomName ? seletedRoomName : 'No rooms selected'}
+        </p>
       </div>
       <div className="border border-stone-200 bg-white">
         <div

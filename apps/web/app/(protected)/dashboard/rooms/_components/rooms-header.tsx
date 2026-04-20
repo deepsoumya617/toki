@@ -8,9 +8,11 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
+  ArrowUpRight02Icon,
   Copy01Icon,
   Edit01Icon,
   Logout02Icon,
+  MeetingRoomIcon,
 } from '@hugeicons/core-free-icons';
 import UpdateRoomModal from '@/components/ui/update-room-modal';
 import { Separator } from '@/components/ui/separator';
@@ -19,6 +21,7 @@ import { useRoomsAll } from '@/hooks/use-rooms-all';
 import useLeaveRoom from '@/hooks/use-leave-room';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { toast } from 'sonner';
@@ -44,6 +47,7 @@ function ActionButton({
   setIsUpdateRoomModalOpen: () => void;
 }) {
   const [isDropdownMenuOpen, setIsDropdownMenuOpen] = useState(false);
+  const router = useRouter();
 
   const leaveRoomMutation = useLeaveRoom();
 
@@ -71,6 +75,12 @@ function ActionButton({
   };
 
   const items: ActionItem[] = [
+    {
+      type: 'item',
+      label: 'Go to room',
+      onClick: () => router.push(`/dashboard/rooms/${roomId}`),
+      icon: MeetingRoomIcon,
+    },
     {
       type: 'item',
       label: 'Copy invite link',
