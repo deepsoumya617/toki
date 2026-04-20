@@ -13,6 +13,8 @@ import {
   Logout02Icon,
 } from '@hugeicons/core-free-icons';
 import UpdateRoomModal from '@/components/ui/update-room-modal';
+import { Separator } from '@/components/ui/separator';
+import BackButton from '@/components/ui/back-button';
 import { useRoomsAll } from '@/hooks/use-rooms-all';
 import useLeaveRoom from '@/hooks/use-leave-room';
 import { HugeiconsIcon } from '@hugeicons/react';
@@ -105,7 +107,7 @@ function ActionButton({
           <Button
             variant="outline"
             size="sm"
-            className="cursor-pointer font-mono uppercase text-[14px] outline-none"
+            className="rounded-none cursor-pointer font-mono uppercase text-[14px] outline-none"
             disabled={!roomId}
           >
             Actions
@@ -121,7 +123,7 @@ function ActionButton({
         }
       />
       <DropdownMenuContent
-        className="w-48 rounded-sm shadow-md border-stone-200"
+        className="w-48 rounded-none shadow-md border-stone-200"
         align="end"
       >
         {items.map((item, idx) => {
@@ -178,7 +180,8 @@ export default function RoomsHeader({ roomId }: { roomId: string | null }) {
         isOpen={isUpdateRoomModalOpen}
         onClose={() => setIsUpdateRoomModalOpen(false)}
       />
-      <div className="flex items-center justify-between">
+      <BackButton href="/dashboard" />
+      <div className="flex items-center justify-between mt-3 mb-8">
         <h1 className="text-2xl font-bold sm:font-semibold tracking-tight text-stone-900">
           Rooms
           <span className="text-lg ml-1 text-stone-500 font-medium">

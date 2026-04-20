@@ -267,7 +267,7 @@ export default function ProtectedLayoutClient({
             </div>
 
             <div className="mt-auto border-t border-stone-200 p-4">
-              <LogoutButton className="h-9 w-full rounded-sm bg-stone-900  text-white hover:bg-stone-800 cursor-pointer font-mono uppercase" />
+              <LogoutButton className="h-9 w-full rounded-none bg-stone-900  text-white hover:bg-stone-800 cursor-pointer font-mono uppercase" />
             </div>
           </div>
         </aside>
@@ -284,9 +284,7 @@ export default function ProtectedLayoutClient({
             </p>
           </header>
 
-          <main className="min-h-0 flex-1 overflow-y-auto p-4 md:p-6">
-            {children}
-          </main>
+          <main className="min-h-0 flex-1 overflow-y-auto">{children}</main>
         </div>
       </div>
     </section>
