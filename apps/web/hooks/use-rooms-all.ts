@@ -15,6 +15,8 @@ export function useRoomsAll() {
       }),
     initialPageParam: null as Cursor | null,
     getNextPageParam: lastPage => lastPage.nextCursor ?? undefined,
+    refetchOnWindowFocus: true,
+    refetchInterval: 30 * 1000,
     select: data => ({
       rooms: data.pages.flatMap(page => page.allRooms),
       totalRooms: data.pages[0]?.totalRooms ?? 0,

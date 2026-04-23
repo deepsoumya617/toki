@@ -8,14 +8,12 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
-  ArrowUpRight02Icon,
   Copy01Icon,
   Edit01Icon,
   Logout02Icon,
   MeetingRoomIcon,
 } from '@hugeicons/core-free-icons';
 import UpdateRoomModal from '@/components/ui/update-room-modal';
-import { Separator } from '@/components/ui/separator';
 import BackButton from '@/components/ui/back-button';
 import { useRoomsAll } from '@/hooks/use-rooms-all';
 import useLeaveRoom from '@/hooks/use-leave-room';

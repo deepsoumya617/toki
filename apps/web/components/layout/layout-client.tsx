@@ -218,7 +218,7 @@ export default function ProtectedLayoutClient({
                       No rooms available.{' '}
                       <span
                         className="cursor-pointer text-stone-950 underline decoration-2 underline-offset-2"
-                        onClick={() => router.push('/dashboard/rooms/create')}
+                        onClick={() => setIsCreateRoomModalOpen(true)}
                       >
                         Create
                       </span>
